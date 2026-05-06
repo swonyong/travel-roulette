@@ -144,6 +144,7 @@ body[data-route="splash"] .theme-fab, body[data-route="select"] .theme-fab { dis
 .preset-bar::-webkit-scrollbar{height:4px}
 .preset-bar::-webkit-scrollbar-track{background:var(--surface2);border-radius:2px}
 .preset-bar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.preset-bar.active {cursor: grabbing; cursor: -webkit-grabbing;}
 .preset-slot{flex-shrink:0;width:90px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface2);padding:11px 7px 9px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .preset-slot.active{border-color:var(--accent);background:var(--surface3)}
 .preset-slot .ps-num{font-size:10px;color:var(--muted);margin-bottom:4px}
@@ -163,7 +164,7 @@ body[data-route="splash"] .theme-fab, body[data-route="select"] .theme-fab { dis
 .name-field{display:flex;align-items:center;gap:8px}
 .name-num{width:24px;height:24px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0;border:1.5px solid var(--border)}
 
-/* 모드 선택 카드 (크고 시원하게) */
+/* 모드 선택 카드 */
 .mode-grid-large { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;}
 .mode-card { background: var(--surface2); border: 2px solid var(--border); border-radius: 18px; padding: 22px 10px; text-align: center; cursor: pointer; transition: all 0.2s; }
 .mode-card.active { border-color: var(--accent); background: var(--surface3); transform: translateY(-4px); box-shadow: var(--card-shadow); }
@@ -420,6 +421,34 @@ body[data-route="select"] .btn-title, body[data-route="setup"] .btn-title, body[
     <button class="btn-clear-soft" style="border: 1px solid var(--border);" onclick="attemptNavTo('select')">게임 변경</button>
   </div>
 
+  <!-- 게임 옵션 (최상단 고정) -->
+  <div class="card">
+    <div class="section-label" style="margin-bottom:12px">게임 옵션</div>
+    
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+        <div>
+            <div style="font-size:13px; font-weight:700; color:var(--text); margin-bottom:2px;">🤫 비밀 모드 (스포 방지)</div>
+        </div>
+        <select id="opt-secret" style="width:130px; font-size:13px; padding:6px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface2); color:var(--text); outline:none;">
+            <option value="none">사용 안 함</option>
+            <option value="person">인원(이름)만 비밀</option>
+            <option value="role">역할(결과)만 비밀</option>
+            <option value="all">모두 비밀</option>
+        </select>
+    </div>
+
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div>
+            <div style="font-size:13px; font-weight:700; color:var(--text); margin-bottom:2px;">⚡ 자동 진행</div>
+        </div>
+        <select id="opt-auto" style="width:130px; font-size:13px; padding:6px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface2); color:var(--text); outline:none;">
+            <option value="manual">수동 (기본)</option>
+            <option value="semi">반자동 (스킵)</option>
+            <option value="full">완전자동 (뷰어)</option>
+        </select>
+    </div>
+  </div>
+
   <div class="card">
     <div class="section-label" style="margin-bottom:10px">프리셋</div>
     <div class="preset-bar" id="preset-bar"></div>
@@ -446,7 +475,7 @@ body[data-route="select"] .btn-title, body[data-route="setup"] .btn-title, body[
     <div class="names-grid" id="names-grid"></div>
   </div>
 
-  <div class="card">
+  <div class="card" id="roles-setup-area">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
       <div class="section-label" style="margin-bottom:0">역할 목록</div>
       <button class="btn-clear-soft" onclick="clearRoles()">지우기 🗑️</button>
@@ -487,7 +516,7 @@ body[data-route="select"] .btn-title, body[data-route="setup"] .btn-title, body[
 
 <!-- ══ GAME ══════════════════════════════════ -->
 <div id="screen-game" class="screen">
-  <div class="game-header">
+  <div class="game-header" id="game-top-area">
     <div class="game-topbar">
       <div class="progress-bar" id="progress-bar"></div>
       <button class="btn-clear-soft" onclick="if(confirm('진행 사항을 초기화하고 처음부터 다시 시작하시겠습니까?')) rerollAll();" style="display:flex; align-items:center; gap:2px; font-size:11px;">🔄 처음부터</button>
@@ -530,7 +559,7 @@ body[data-route="select"] .btn-title, body[data-route="setup"] .btn-title, body[
 
     <!-- 사다리타기 -->
     <div id="mode-ladder" style="display:none">
-      <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:8px">1. 아래에서 이름을 선택하고<br>2. 사다리 시작점(선택)을 눌러주세요!</div>
+      <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:8px" id="lad-guide-txt">1. 아래에서 이름을 선택하고<br>2. 사다리 시작점(선택)을 눌러주세요!</div>
       <div id="lad-people-pool" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:12px;"></div>
       <div class="lad-top" id="lad-top"></div>
       <div style="overflow-x:auto; margin:10px 0;"><canvas id="ladCanvas" width="440" height="260" style="display:block;margin:0 auto;border-radius:14px;background:var(--surface2)"></canvas></div>
@@ -561,12 +590,17 @@ body[data-route="select"] .btn-title, body[data-route="setup"] .btn-title, body[
     </div>
 
     <div id="result-wrap" style="display:none;margin-top:16px">
-      <div class="section-label">결과</div>
+      <div class="section-label" id="result-label">결과</div>
       <div class="result-list" id="result-list"></div>
     </div>
 
     <div id="next-wrap" style="display:none;margin-top:10px">
       <button class="btn btn-role" id="next-btn" style="padding:15px; width:100%;">다음으로 →</button>
+    </div>
+
+    <!-- 비밀모드 오픈 버튼 래퍼 -->
+    <div id="done-secret-wrap" style="display:none;margin-top:10px">
+      <button class="btn btn-main" style="width:100%; padding:20px; font-size:18px; font-weight:900; box-shadow: 0 8px 24px rgba(240,98,146,0.3);" onclick="revealSecret()">🔒 모든 결과 한 번에 공개하기! 🔒</button>
     </div>
 
     <div id="done-wrap" style="display:none;margin-top:10px">
@@ -604,10 +638,9 @@ body[data-route="select"] .btn-title, body[data-route="setup"] .btn-title, body[
         </div>
         <div class="undo-desc" id="undo-desc">(입금 후 "되돌리기"를 진행하세요!)</div>
         
-        <!-- 버튼 균일 비율 정렬 (가로 나란히) -->
         <div class="undo-btn-row" id="undo-btn-group">
             <button class="btn btn-main" style="flex:1; width:auto; padding:14px 0;" onclick="spinUndoSlot()" id="btn-undo-spin">슬롯돌리기</button>
-            <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal()" id="btn-undo-cancel">취소하기</button>
+            <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal(true)" id="btn-undo-cancel">취소하기</button>
         </div>
     </div>
 </div>
@@ -620,7 +653,7 @@ body[data-route="select"] .btn-title, body[data-route="setup"] .btn-title, body[
         <div style="display:flex; flex-direction:column; gap:10px;">
             <button class="btn btn-main" style="padding:14px 0; font-size:14px;" onclick="saveAndNav()">현재 상황 저장 (이어서 가능)</button>
             <button class="btn btn-red" style="padding:14px 0; font-size:14px;" onclick="exitAndNav()">저장하지 않고 나가기</button>
-            <button class="btn btn-soft" style="padding:14px 0; font-size:14px;" onclick="document.getElementById('nav-warn-modal').style.display='none'">취소</button>
+            <button class="btn btn-soft" style="padding:14px 0; font-size:14px;" onclick="document.getElementById('nav-warn-modal').style.display='none'; if(autoType === 'full') startFullAutoSequence();">취소</button>
         </div>
     </div>
 </div>
@@ -634,6 +667,7 @@ body[data-route="select"] .btn-title, body[data-route="setup"] .btn-title, body[
   <div id="history-list"></div>
 </div>
 
+<!-- (Import Menu 생략됨 - 기존과 동일) -->
 <div id="import-menu" style="display:none;position:fixed;inset:0;z-index:500;align-items:flex-end;justify-content:center">
   <div style="position:absolute;inset:0;background:rgba(0,0,0,.25)" onclick="closeImportMenu()"></div>
   <div id="import-sheet" style="position:relative;width:100%;max-width:480px;background:var(--surface);border-radius:24px 24px 0 0;padding:20px;box-shadow:0 -8px 32px rgba(0,0,0,.15);animation:sheetUp .25s ease">
@@ -738,6 +772,26 @@ body[data-route="select"] .btn-title, body[data-route="setup"] .btn-title, body[
 })();
 
 /* ═══════════════════════════════════════
+   PRESET DRAG SCROLL
+═══════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+    const slider = document.getElementById('preset-bar');
+    let isDown = false; let startX; let scrollLeft;
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true; slider.classList.add('active');
+        startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); });
+    slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); });
+    slider.addEventListener('mousemove', (e) => {
+        if(!isDown) return; e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2;
+        slider.scrollLeft = scrollLeft - walk;
+    });
+});
+
+/* ═══════════════════════════════════════
    SEASON CONFIG & UTILS
 ═══════════════════════════════════════ */
 const S = {
@@ -783,6 +837,15 @@ let timerTarget = 15;
 let timerState = 0; let timerRecords = []; let timerCurrentIdx = 0; let tStart = 0; let tInt = null; let lastDistractorTime = 0;
 const distractors = ["지금 누를까?", "에이 벌써?", "앗, 늦었다!", "시간 멈췄나?", "방심 금물!", "침착해...", "마음속으로 세요!"];
 
+let autoType = 'manual'; // manual, semi, full
+let secretType = 'none'; // none, person, role, all
+let isSecretRevealed = false;
+
+// 헬퍼: 현재 상황에서 이름을 숨겨야 하는가? (최종 결과창 전까지)
+function isPersonSecret() { return secretType === 'person' || secretType === 'all'; }
+// 헬퍼: 현재 상황에서 역할을 숨겨야 하는가? (최종 결과창 전까지)
+function isRoleSecret() { return secretType === 'role' || secretType === 'all'; }
+
 let undoConfigMode = 'auto'; 
 let undoCustomCount = 1;
 let maxUndoCount = 0;
@@ -790,7 +853,12 @@ let currentUndoCount = 0;
 
 const penaltyAmounts = [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 'lucky'];
 let popupSlotInt = null;
-let isGameFinished = false; // 게임 종료 여부 확인용
+let isGameFinished = false; 
+let fullAutoTimer1 = null; let fullAutoTimer2 = null; let autoTransitionTimer = null;
+
+// ★ 벌금 & Undo 기록 추적 트래커
+window.penaltyTracker = {};
+window.lastPenaltyAmount = 0;
 
 const DP=[
   {name:'양구 캠핑장',members:['서원용','송민준','김형진','이병영','장은재'],roles:['조수석에서 노래틀기','장보기','텐트치기','고기굽기','다음날 설거지 독박'],mode:'timer'},
@@ -804,32 +872,42 @@ function lsSet(k,v){localStorage.setItem(k,JSON.stringify(v));}
 function loadP(){return lsGet('tg_presets',()=>DP.map(p=>({...p})));}
 function loadH(){return lsGet('tg_history',[]);}
 
-// 내비게이션 보호 (진행중인 게임 이탈 방지)
 let pendingNavId = null;
 
 function checkGameInProgress() {
     if (isGameFinished) return false;
-    if (gameMode === 'timer') return timerCurrentIdx > 0;
-    if (gameMode === 'ladder') return results.length > 0;
-    return results.length > 0 || pickedPerson !== null;
+    if (document.getElementById('resume-fab').style.display === 'flex') return false; 
+    if (document.body.getAttribute('data-route') === 'game') return true; 
+    return results.length > 0 || pickedPerson !== null || timerCurrentIdx > 0 || undoStack.length > 0;
+}
+
+function clearFullAutoTimer() {
+    if(fullAutoTimer1) clearTimeout(fullAutoTimer1);
+    if(fullAutoTimer2) clearTimeout(fullAutoTimer2);
+    if(autoTransitionTimer) clearTimeout(autoTransitionTimer);
 }
 
 function resetGameVariables() {
+    clearFullAutoTimer();
     results = []; pickedPerson = null; undoStack = []; redoStack = [];
     timerRecords = []; timerCurrentIdx = 0; timerState = 0;
     isGameFinished = false;
-    if(ladData) ladData.history = [];
+    ladData = null; 
+    window.penaltyTracker = {};
+    window.lastPenaltyAmount = 0;
 }
 
 function attemptNavTo(id) {
     if (id === 'game') {
         document.getElementById('resume-fab').style.display = 'none';
         navTo('game');
+        startFullAutoSequence(); 
         return;
     }
     if (checkGameInProgress()) {
         pendingNavId = id;
         document.getElementById('nav-warn-modal').style.display = 'flex';
+        clearFullAutoTimer(); 
     } else {
         navTo(id);
         if(id === 'splash') executeGoTitle();
@@ -874,6 +952,13 @@ let themeOpen=false;
 function navTo(id){
     if(themeOpen)closeTheme();
     document.body.setAttribute('data-route', id);
+    
+    // 네비게이션 시 UI 강제 동기화 
+    if(id === 'setup' || id === 'select') {
+        selectMode(gameMode);
+        updateSetupModeBanner();
+    }
+    
     ['setup','game','history','select'].forEach(s=>{
         const screen=document.getElementById('screen-'+s); 
         if(screen)screen.classList.toggle('active',s===id);
@@ -903,9 +988,9 @@ document.addEventListener('click',e=>{
    PRESETS & SETUP
 ═══════════════════════════════════════ */
 function selectMode(m, el) {
-    gameMode = m;
+    if (m) gameMode = m;
     document.querySelectorAll('.mode-card').forEach((b, i) => {
-        b.classList.toggle('active', ['roulette','card','ladder','slot','timer'][i] === m);
+        b.classList.toggle('active', ['roulette','card','ladder','slot','timer'][i] === gameMode);
     });
 }
 function goToSetup() {
@@ -917,7 +1002,14 @@ function updateSetupModeBanner() {
     const names = {roulette:'룰렛', card:'카드뽑기', ladder:'사다리타기', slot:'슬롯머신', timer:'블라인드 타이머'};
     document.getElementById('setup-mode-icon').textContent = icons[gameMode];
     document.getElementById('setup-mode-name').textContent = names[gameMode];
-    document.getElementById('timer-setup-area').style.display = (gameMode === 'timer') ? 'block' : 'none';
+    
+    if(gameMode === 'timer') {
+        document.getElementById('roles-setup-area').style.display = 'none';
+        document.getElementById('timer-setup-area').style.display = 'block';
+    } else {
+        document.getElementById('roles-setup-area').style.display = 'block';
+        document.getElementById('timer-setup-area').style.display = 'none';
+    }
 }
 
 function renderPresets(){
@@ -937,7 +1029,9 @@ function pickImportSource(i){importSourceIdx=i; closeImportMenu(); const p=loadP
 function closeImportType(){document.getElementById('import-type-menu').style.display='none';}
 function doImport(type){syncInputs(); const p=loadP()[importSourceIdx]; if(type==='members'||type==='all'){memberCount=p.members.length||2; memberNames=[...p.members]; while(memberNames.length<memberCount)memberNames.push(''); while(roles.length<memberCount)roles.push(''); document.getElementById('count-disp').textContent=memberCount; renderNames(); renderRoles();} if(type==='roles'||type==='all'){roles=[...p.roles]; renderRoles();} closeImportType(); showToast('가져오기 완료!');}
 function commitPN(i,val){const p=loadP(); const t=val.trim(); if(t===p[i].name)return; p[i].name=t||`프리셋 ${i+1}`; lsSet('tg_presets',p); renderPresets(); showToast('이름 저장됐어요!');}
-function loadPreset(i){syncInputs(); activePreset=i; lsSet('tg_active',i); const p=loadP()[i]; memberCount=p.members.length||2; memberNames=[...p.members]; while(memberNames.length<memberCount)memberNames.push(''); roles=[...p.roles]; while(roles.length<memberCount)roles.push(''); gameMode=p.mode||'roulette'; document.getElementById('count-disp').textContent=memberCount; renderPresets(); renderNames(); renderRoles(); updateSetupModeBanner(); showToast(`프리셋 ${i+1} 불러왔어요!`);}
+
+// ★ 버그 픽스: 프리셋을 누를 때마다 위 게임이 변경되지 않도록 처리 (설정창 진입 시에만)
+function loadPreset(i){syncInputs(); activePreset=i; lsSet('tg_active',i); const p=loadP()[i]; memberCount=p.members.length||2; memberNames=[...p.members]; while(memberNames.length<memberCount)memberNames.push(''); roles=[...p.roles]; while(roles.length<memberCount)roles.push(''); document.getElementById('count-disp').textContent=memberCount; renderPresets(); renderNames(); renderRoles(); showToast(`프리셋 ${i+1} 불러왔어요!`);}
 function savePreset(){syncInputs(); const presets=loadP(); const ni=document.getElementById(`pni-${activePreset}`); const name=(ni?ni.value.trim():presets[activePreset].name)||`프리셋 ${activePreset+1}`; presets[activePreset]={name,members:[...memberNames],roles:[...roles],mode:gameMode}; lsSet('tg_presets',presets); renderPresets(); showToast('💾 저장됐어요!');}
 function syncInputs(){memberNames=Array.from({length:memberCount},(_,i)=>(document.getElementById('nm-'+i)?.value||memberNames[i]||'').trim()); roles=Array.from(document.querySelectorAll('#roles-list input')).map((el,i)=>el.value.trim()||roles[i]||'');}
 function changeCount(d){memberCount=Math.max(2,Math.min(10,memberCount+d)); while(memberNames.length<memberCount)memberNames.push(''); memberNames=memberNames.slice(0,memberCount); while(roles.length<memberCount)roles.push(''); if(roles.length>memberCount&&d<0)roles=roles.slice(0,memberCount); document.getElementById('count-disp').textContent=memberCount; renderNames(); renderRoles(); updateUndoMaxCount();}
@@ -980,7 +1074,22 @@ function updateUndoMaxCount() {
 }
 
 /* ═══════════════════════════════════════
-   UNDO MODAL LOGIC (벌금 슬롯)
+   UNDO LOGIC (트래커 함수)
+═══════════════════════════════════════ */
+function getPenaltyText(pName) {
+    if (!window.penaltyTracker || !window.penaltyTracker[pName]) return '';
+    const pt = window.penaltyTracker[pName];
+    if (pt.count === 0) return '';
+    
+    let amtText = pt.amount > 0 ? `, 입금액 ${pt.amount.toLocaleString()}원` : ', Lucky! 공짜';
+    let roleLabel = gameMode === 'timer' ? '이전기록' : '이전역할';
+    let rolesText = pt.prevRoles.join(' ➔ '); 
+    
+    return `(되돌리기 ${pt.count}번${amtText}) / ${roleLabel} : ${rolesText}`;
+}
+
+/* ═══════════════════════════════════════
+   UNDO POPUP (벌금 슬롯머신)
 ═══════════════════════════════════════ */
 function copyAccount() {
     const text = '3333-10-2925510';
@@ -1008,8 +1117,14 @@ function updateUndoRedoUI() {
     redoBtn.style.display = redoStack.length ? 'inline-flex' : 'none';
 }
 
+function clearRedoStackOnManualPlay() {
+    redoStack = [];
+    document.getElementById('redo-btn').style.display = 'none';
+}
+
 function requestUndo() {
     if(currentUndoCount <= 0) return;
+    clearFullAutoTimer(); // 모달 뜨면 오토 멈춤
     
     document.getElementById('undo-modal').style.display = 'flex';
     document.getElementById('undo-slot-val').textContent = '0';
@@ -1020,13 +1135,14 @@ function requestUndo() {
     
     document.getElementById('undo-btn-group').innerHTML = `
         <button class="btn btn-main" style="flex:1; width:auto; padding:14px 0;" onclick="spinUndoSlot()" id="btn-undo-spin">슬롯돌리기</button>
-        <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal()">취소하기</button>
+        <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal(true)">취소하기</button>
     `;
 }
 
-function closeUndoModal() {
+function closeUndoModal(resumeAuto = false) {
     if(popupSlotInt) clearInterval(popupSlotInt);
     document.getElementById('undo-modal').style.display = 'none';
+    if(resumeAuto && autoType === 'full') startFullAutoSequence(); // 취소하면 다시 오토 시작
 }
 
 function spinUndoSlot() {
@@ -1055,6 +1171,7 @@ function spinUndoSlot() {
             const finalVal = penaltyAmounts[Math.floor(Math.random() * penaltyAmounts.length)];
             
             if(finalVal === 'lucky') {
+                window.lastPenaltyAmount = 0;
                 valEl.textContent = 'Lucky!';
                 document.getElementById('undo-won-text').textContent = '🎉';
                 document.getElementById('undo-desc').textContent = '(대박! 차감된 기회가 복구되었습니다!)';
@@ -1064,9 +1181,10 @@ function spinUndoSlot() {
                 
                 btnGroup.innerHTML = `
                     <button class="btn btn-main" style="flex:1; width:auto; padding:14px 0;" onclick="confirmUndo()">공짜 복구 확인</button>
-                    <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal()">취소하기</button>
+                    <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal(true)">취소하기</button>
                 `;
             } else if (finalVal === 10000) {
+                window.lastPenaltyAmount = 10000;
                 valEl.textContent = '10,000';
                 document.getElementById('undo-won-text').textContent = '원 당첨!';
                 document.getElementById('undo-desc').textContent = '(입금 후 "되돌리기"를 진행하세요!)';
@@ -1076,6 +1194,7 @@ function spinUndoSlot() {
                     <button class="btn btn-main" style="flex:1; width:100%; padding:14px 0;" onclick="confirmUndo()">입금확인 (취소불가 ㅋㅋㅋ)</button>
                 `;
             } else {
+                window.lastPenaltyAmount = finalVal;
                 valEl.textContent = finalVal.toLocaleString();
                 document.getElementById('undo-won-text').textContent = '원 당첨!';
                 document.getElementById('undo-desc').textContent = '(입금 후 "되돌리기"를 진행하세요!)';
@@ -1083,7 +1202,7 @@ function spinUndoSlot() {
                 
                 btnGroup.innerHTML = `
                     <button class="btn btn-main" style="flex:1; width:auto; padding:14px 0;" onclick="confirmUndo()">입금확인</button>
-                    <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal()">취소하기</button>
+                    <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal(true)">취소하기</button>
                 `;
             }
         }
@@ -1092,7 +1211,36 @@ function spinUndoSlot() {
 }
 
 function confirmUndo() {
-    closeUndoModal();
+    if (undoStack.length > 0) {
+        const lastAction = undoStack[undoStack.length - 1];
+        let pName = null;
+        let pRole = null;
+
+        if (lastAction.type === 'pair') {
+            pName = lastAction.person.text;
+            pRole = lastAction.role.text;
+        } else if (lastAction.type === 'ladder') {
+            pName = lastAction.person.text;
+            pRole = lastAction.role.text;
+        } else if (lastAction.type === 'timer') {
+            pName = lastAction.record.person.text;
+            pRole = `${lastAction.record.error.toFixed(2)}초`;
+        } else if (lastAction.type === 'single_p') {
+            pName = lastAction.item.text;
+            pRole = '순서 뽑기';
+        }
+
+        if (pName && pRole) {
+            if (!window.penaltyTracker) window.penaltyTracker = {};
+            if (!window.penaltyTracker[pName]) {
+                window.penaltyTracker[pName] = { count: 0, amount: 0, prevRoles: [] };
+            }
+            window.penaltyTracker[pName].count += 1;
+            window.penaltyTracker[pName].amount += (window.lastPenaltyAmount || 0);
+            window.penaltyTracker[pName].prevRoles.push(pRole); 
+        }
+    }
+    closeUndoModal(false); // 오토 재시작 안함, performUndo에서 렌더링 호출
     performUndo();
 }
 
@@ -1102,15 +1250,25 @@ function confirmUndo() {
 function startGame(){
   syncInputs();
   let validP=memberNames.filter(n=>n.trim()!==''); let validR=roles.filter(r=>r.trim()!=='');
-  if(validP.length===0&&validR.length===0){alert("이름이나 역할 중 하나는 내용을 입력해주세요!");return;}
+  
+  if(gameMode !== 'timer' && validP.length===0 && validR.length===0){alert("이름이나 역할 중 하나는 내용을 입력해주세요!");return;}
+  if(gameMode === 'timer' && validP.length===0){alert("참가자 이름을 입력해주세요!");return;}
+  
   if(validR.length===0)playMode='personOnly'; else if(validP.length===0)playMode='roleOnly'; else playMode='both';
   
   if(gameMode==='ladder' && playMode!=='both'){
       alert('사다리타기는 이름과 역할이 모두 입력되어야 가능합니다!\n(룰렛 모드로 대체 실행합니다.)');
       gameMode = 'roulette';
   }
-  if(gameMode==='timer' && playMode==='roleOnly'){
-      alert('타이머 모드는 참가자 이름 입력이 필수입니다!'); return;
+
+  autoType = document.getElementById('opt-auto').value;
+  secretType = document.getElementById('opt-secret').value;
+  isSecretRevealed = false;
+
+  // 완전자동 모드 제한
+  if(autoType === 'full' && (gameMode === 'ladder' || gameMode === 'timer')) {
+      showToast('⚠️ 사다리/타이머는 완전자동이 불가능하여 반자동으로 진행됩니다.');
+      autoType = 'semi';
   }
 
   let pPool=memberNames.map((n,i)=>({id:'p'+i,text:n||`${i+1}번`}));
@@ -1144,12 +1302,36 @@ function startGame(){
   navTo('game'); renderGameUI();
 }
 
+function startFullAutoSequence() {
+    clearFullAutoTimer();
+    if(autoType !== 'full') return;
+    if(gameMode === 'ladder' || gameMode === 'timer') return;
+    if(isGameFinished) return;
+
+    fullAutoTimer1 = setTimeout(() => {
+        if(gameMode === 'roulette' && rState === 0) {
+            clickRoulette();
+            fullAutoTimer2 = setTimeout(() => { if(rState === 1) clickRoulette(); }, 1500 + Math.random()*2000);
+        } else if(gameMode === 'slot' && slotState === 0) {
+            clickSlot();
+            fullAutoTimer2 = setTimeout(() => { if(slotState === 1) clickSlot(); }, 1500 + Math.random()*2000);
+        } else if(gameMode === 'card') {
+            const unflipped = Array.from(document.querySelectorAll('.fcard:not(.used)'));
+            if(unflipped.length > 0) {
+                const target = unflipped[Math.floor(Math.random() * unflipped.length)];
+                target.click(); 
+            }
+        }
+    }, 1200);
+}
+
 function renderGameUI(){
   updateProgress(); updateBadge(); updateRemaining(); updateUndoRedoUI();
   document.getElementById('result-wrap').style.display=results.length?'block':'none';
   renderResultList();
   document.getElementById('next-wrap').style.display='none';
   document.getElementById('done-wrap').style.display='none';
+  document.getElementById('done-secret-wrap').style.display='none';
   
   ['roulette','card','ladder','slot','timer'].forEach(m=>document.getElementById('mode-'+m).style.display='none');
   document.getElementById('mode-'+gameMode).style.display='block';
@@ -1160,36 +1342,45 @@ function renderGameUI(){
   if(gameMode==='slot')initSlot();
   if(gameMode==='timer')initTimer();
 
-  setTimeout(checkAutoSkip, 100);
+  if(autoType === 'full') startFullAutoSequence();
 }
 
 function checkAutoSkip() {
     if(gameMode === 'ladder' || gameMode === 'timer') return false; 
     if (playMode === 'both') {
         if (phase === 'person' && remainP.length === 1 && remainR.length > 0) {
-            showToast(`마지막 인원 '${remainP[0].text}' (자동 배정)`);
+            if(!isPersonSecret()) showToast(`마지막 인원 '${remainP[0].text}' (자동 배정)`);
+            else showToast(`마지막 인원 (자동 배정)`);
+            
             pickedPerson = remainP[0]; phase = 'role';
             updateProgress(); updateBadge(); updateRemaining();
             
             if (remainR.length === 1) {
                 setTimeout(checkAutoSkip, 800); 
             } else {
-                setTimeout(() => {
+                if(autoType === 'semi' || autoType === 'full') {
+                    autoTransitionTimer = setTimeout(()=>nextPhase(), 800);
+                } else {
                     document.getElementById('next-wrap').style.display='block';
                     updateUndoRedoUI();
-                    const nb=document.getElementById('next-btn'); nb.textContent=`${pickedPerson.text}의 역할 뽑기 →`; nb.onclick=nextPhase;
-                }, 800);
+                    const nb=document.getElementById('next-btn'); 
+                    nb.textContent = isPersonSecret() ? `🔒 다음 진행 →` : `${pickedPerson.text}의 역할 뽑기 →`; 
+                    nb.onclick=nextPhase;
+                }
             }
             return true;
         } else if (phase === 'role' && remainR.length === 1 && pickedPerson) {
-            showToast(`마지막 역할 '${remainR[0].text}' (자동 배정)`);
+            if(!isRoleSecret()) showToast(`마지막 역할 '${remainR[0].text}' (자동 배정)`);
+            else showToast(`마지막 역할 (자동 배정)`);
             onPicked(remainR[0], true); return true;
         }
     } else if (playMode === 'personOnly' && remainP.length === 1) {
-        showToast(`마지막 순서 '${remainP[0].text}' (자동 배정)`);
+        if(!isPersonSecret()) showToast(`마지막 순서 '${remainP[0].text}' (자동 배정)`);
+        else showToast(`마지막 순서 (자동 배정)`);
         onPicked(remainP[0], true); return true;
     } else if (playMode === 'roleOnly' && remainR.length === 1) {
-        showToast(`마지막 역할 '${remainR[0].text}' (자동 배정)`);
+        if(!isRoleSecret()) showToast(`마지막 역할 '${remainR[0].text}' (자동 배정)`);
+        else showToast(`마지막 역할 (자동 배정)`);
         onPicked(remainR[0], true); return true;
     }
     return false;
@@ -1210,36 +1401,52 @@ function updateProgress(){
   }
   document.getElementById('progress-bar').innerHTML=Array.from({length:totalSteps},(_,i)=>`<div class="prog-dot ${i<done?'done':i===done?'cur':''}"></div>`).join('');
 }
+
 function updateBadge(){
   const b=document.getElementById('phase-badge'),t=document.getElementById('phase-title'),s=document.getElementById('phase-sub');
+  
+  if(isGameFinished) {
+      b.style.display = 'none'; t.style.display = 'none'; s.style.display = 'none';
+      return;
+  } else {
+      b.style.display = 'inline-flex'; t.style.display = 'block'; s.style.display = 'block';
+  }
+
   const rn=results.length+1;
+  const gmNames = {roulette:'룰렛', card:'카드뽑기', ladder:'사다리타기', slot:'슬롯머신', timer:'블라인드 타이머'};
+  const gmName = gmNames[gameMode];
+
   if(gameMode==='ladder') {
-      b.className='phase-badge pb1'; b.textContent=`사다리타기 · ${rn}/${origP.length}`;
+      b.className='phase-badge pb1'; b.textContent=`${gmName} · ${rn}/${origP.length}`;
       t.textContent='이름을 먼저 선택하세요!'; s.textContent='그 다음 사다리 시작점을 골라 직접 타보세요.';
   } else if(gameMode==='timer') {
-      b.className='phase-badge pb2'; b.textContent=`감각 타이머 · ${timerCurrentIdx+1}/${origP.length}`;
+      b.className='phase-badge pb2'; b.textContent=`${gmName} · ${timerCurrentIdx+1}/${origP.length}`;
       t.textContent='목표 시간에 가깝게 멈추세요!'; s.textContent='3초 후 숫자가 사라집니다. 오직 감각 승부!';
   } else if(playMode==='personOnly'){
-      b.className='phase-badge pb1'; b.textContent=`순서 뽑기 · ${rn}/${origP.length}`;
+      b.className='phase-badge pb1'; b.textContent=`${gmName} · 순서 뽑기 · ${rn}/${origP.length}`;
       t.textContent=`${rn}번째 주인공은?`; s.textContent=`남은 ${remainP.length}명 중에서 뽑아요`;
   } else if(playMode==='roleOnly'){
-      b.className='phase-badge pb2'; b.textContent=`역할 뽑기 · ${rn}/${origR.length}`;
+      b.className='phase-badge pb2'; b.textContent=`${gmName} · 역할 뽑기 · ${rn}/${origR.length}`;
       t.textContent=`${rn}번째 역할은?`; s.textContent=`남은 ${remainR.length}개 역할 중에서 뽑아요`;
   } else {
-      if(phase==='person'){b.className='phase-badge pb1'; b.textContent=`1단계 · ${rn}/${origP.length}`; t.textContent='누가 뽑힐까?'; s.textContent=`남은 ${remainP.length}명 중에서 한 명을 뽑아요`;}
-      else {b.className='phase-badge pb2'; b.textContent=`2단계 · ${rn}/${origP.length}`; t.innerHTML=`<span style="color:var(--accent)">${pickedPerson.text}</span>의 역할은?`; s.textContent=`남은 ${remainR.length}개 역할 중에서 뽑아요`;}
+      if(phase==='person'){
+          b.className='phase-badge pb1'; b.textContent=`${gmName} · 1단계 · ${rn}/${origP.length}`; t.textContent='누가 뽑힐까?'; s.textContent=`남은 ${remainP.length}명 중에서 한 명을 뽑아요`;
+      } else {
+          b.className='phase-badge pb2'; b.textContent=`${gmName} · 2단계 · ${rn}/${origP.length}`; t.innerHTML=`<span style="color:var(--accent)">${isPersonSecret() ? "🔒 비밀" : pickedPerson.text}</span>의 역할은?`; s.textContent=`남은 ${remainR.length}개 역할 중에서 뽑아요`;
+      }
   }
 }
+
 function updateRemaining(){
-  document.getElementById('rem-p-label').style.display=(playMode==='roleOnly'||gameMode==='ladder'||gameMode==='timer')?'none':'block';
-  document.getElementById('rem-persons').style.display=(playMode==='roleOnly'||gameMode==='ladder'||gameMode==='timer')?'none':'flex';
-  document.getElementById('rem-r-label').style.display=(playMode==='personOnly'||gameMode==='ladder'||gameMode==='timer')?'none':'block';
-  document.getElementById('rem-roles').style.display=(playMode==='personOnly'||gameMode==='ladder'||gameMode==='timer')?'none':'flex';
+  document.getElementById('rem-p-label').style.display=(playMode==='roleOnly'||gameMode==='ladder'||gameMode==='timer'||isPersonSecret())?'none':'block';
+  document.getElementById('rem-persons').style.display=(playMode==='roleOnly'||gameMode==='ladder'||gameMode==='timer'||isPersonSecret())?'none':'flex';
+  document.getElementById('rem-r-label').style.display=(playMode==='personOnly'||gameMode==='ladder'||gameMode==='timer'||isRoleSecret())?'none':'block';
+  document.getElementById('rem-roles').style.display=(playMode==='personOnly'||gameMode==='ladder'||gameMode==='timer'||isRoleSecret())?'none':'flex';
   
-  if(gameMode!=='timer' && playMode!=='roleOnly') {
+  if(gameMode!=='timer' && playMode!=='roleOnly' && !isPersonSecret()) {
       document.getElementById('rem-persons').innerHTML=origP.map(p=>{const isUsed=!remainP.find(rp=>rp.id===p.id); if(isUsed){if(pickedPerson&&pickedPerson.id===p.id)return `<div class="chip chip-a" style="font-weight:700">${p.text} ✓</div>`; return `<div class="chip chip-done">${p.text}</div>`;} return `<div class="chip chip-a">${p.text}</div>`;}).join('');
   }
-  if(gameMode!=='timer' && playMode!=='personOnly') {
+  if(gameMode!=='timer' && playMode!=='personOnly' && !isRoleSecret()) {
       document.getElementById('rem-roles').innerHTML=origR.map(r=>{const isUsed=!remainR.find(rr=>rr.id===r.id); if(isUsed)return `<div class="chip chip-done">${r.text}</div>`; return `<div class="chip chip-b">${r.text}</div>`;}).join('');
   }
 }
@@ -1259,6 +1466,7 @@ function initTimer(){
 }
 
 function clickTimer(){
+    clearFullAutoTimer();
     const display = document.getElementById('timer-display');
     const circle = document.getElementById('timer-circle');
     
@@ -1286,7 +1494,7 @@ function clickTimer(){
         let diff = (performance.now() - tStart) / 1000; let error = Math.abs(timerTarget - diff);
         const record = { person: origP[timerCurrentIdx], time: diff, error: error };
         
-        redoStack = []; // 수동 진행 시 Redo Stack 클리어
+        clearRedoStackOnManualPlay();
         undoStack.push({type:'timer', record: record, idx: timerCurrentIdx});
         timerRecords.push(record);
         updateUndoRedoUI();
@@ -1295,18 +1503,24 @@ function clickTimer(){
         circle.style.borderColor = 'var(--muted)'; circle.style.background = 'var(--surface2)'; vibrate([50, 50]);
 
         if (timerCurrentIdx < origP.length - 1) {
-            document.getElementById('next-wrap').style.display = 'block'; 
-            const nb = document.getElementById('next-btn'); nb.textContent = '다음 사람 도전 →';
-            nb.onclick = () => { document.getElementById('next-wrap').style.display = 'none'; timerCurrentIdx++; renderGameUI(); };
+            if(autoType === 'semi' || autoType === 'full') {
+                autoTransitionTimer = setTimeout(() => { timerCurrentIdx++; renderGameUI(); }, 1200);
+            } else {
+                document.getElementById('next-wrap').style.display = 'block'; 
+                const nb = document.getElementById('next-btn'); nb.textContent = '다음 사람 도전 →';
+                nb.onclick = () => { document.getElementById('next-wrap').style.display = 'none'; timerCurrentIdx++; renderGameUI(); };
+            }
         } else { setTimeout(finishTimerMode, 800); }
     }
 }
 
 function finishTimerMode() {
-    timerRecords.sort((a, b) => a.error - b.error);
+    if(!isRoleSecret() || isSecretRevealed) {
+        timerRecords.sort((a, b) => a.error - b.error);
+    }
     results = [];
     timerRecords.forEach((rec, i) => {
-        results.push({ person: rec.person.text, extra: `(오차 ${rec.error.toFixed(2)}초)` });
+        results.push({ person: rec.person.text, role: `오차 ${rec.error.toFixed(2)}초`, extra: getPenaltyText(rec.person.text) });
     });
     document.getElementById('result-wrap').style.display = 'block'; renderResultList(); showDone();
 }
@@ -1321,14 +1535,18 @@ function drawRouletteCanvas(){
   ctx.clearRect(0,0,w,h); if(n===0)return; const arc=(Math.PI*2)/n;
   for(let i=0;i<n;i++){
     ctx.beginPath(); ctx.fillStyle=cfg.bgs[i%cfg.bgs.length]; ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,i*arc,(i+1)*arc); ctx.fill(); ctx.strokeStyle='#ffffff'; ctx.lineWidth=2; ctx.stroke();
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(i*arc+arc/2); ctx.textAlign='right'; ctx.fillStyle=cfg.colors[i%cfg.colors.length]; ctx.font='bold 16px Gmarket Sans'; let txt=pool[i].text; if(txt.length>7)txt=txt.substring(0,6)+'..'; ctx.fillText(txt,r-15,6); ctx.restore();
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(i*arc+arc/2); ctx.textAlign='right'; ctx.fillStyle=cfg.colors[i%cfg.colors.length]; ctx.font='bold 16px Gmarket Sans'; 
+    let isSecret = (phase === 'person' || playMode === 'personOnly') ? isPersonSecret() : isRoleSecret();
+    let txt= isSecret ? "🔒 비밀" : pool[i].text; if(txt.length>7)txt=txt.substring(0,6)+'..'; ctx.fillText(txt,r-15,6); ctx.restore();
   }
 }
 function clickRoulette(){
+  clearFullAutoTimer();
   const canvas=document.getElementById('rou-canvas'); const btn=document.getElementById('rou-btn'); const pool=getPool(); if(pool.length===0)return;
   if(rState===0){
     rState=1; btn.textContent='🛑 멈추기!'; document.getElementById('rou-label').textContent='터치하면 멈춥니다!';
     canvas.style.transition='transform 2000s linear'; rAngle+=720000; canvas.style.transform=`rotate(${rAngle}deg)`;
+    if(autoType === 'full') startFullAutoSequence(); 
   } else if(rState===1){
     rState=2; btn.disabled=true; btn.textContent='...결과 확인중...';
     const style=window.getComputedStyle(canvas); const matrix=new WebKitCSSMatrix(style.transform); let currentAngle=Math.atan2(matrix.b,matrix.a)*(180/Math.PI); if(currentAngle<0)currentAngle+=360;
@@ -1336,7 +1554,8 @@ function clickRoulette(){
     let targetRotation=360-(winIdx*sliceDeg+sliceDeg/2)-90; targetRotation+=360*3; 
 
     const rv = Math.random(); let trollLevel = 0; let slip1 = 0, slip2 = 0;
-    if(pool.length >= 3) { if(rv < 0.15 && pool.length >= 4) trollLevel = 2; else if (rv < 0.35) trollLevel = 1; }
+    let isSecret = (phase === 'person' || playMode === 'personOnly') ? isPersonSecret() : isRoleSecret();
+    if(pool.length >= 3 && !isSecret) { if(rv < 0.15 && pool.length >= 4) trollLevel = 2; else if (rv < 0.35) trollLevel = 1; }
     if(trollLevel > 0) { slip1 = Math.floor(Math.random() * 2) + 1; targetRotation -= slip1 * sliceDeg; }
 
     canvas.style.transition='transform 2.2s cubic-bezier(0.1, 0.9, 0.2, 1)';
@@ -1381,26 +1600,29 @@ function initSlot(){
   document.getElementById('slot-btn').textContent='🎰 레버 당기기!';
 }
 function clickSlot(){
+  clearFullAutoTimer();
   const pool=getPool(); if(!pool.length)return; 
   const reel=document.getElementById('slot-reel'), btn=document.getElementById('slot-btn'), lbl=document.getElementById('slot-label'); 
   if(slotState===0){
     slotState=1; btn.textContent='🛑 멈추기!'; lbl.textContent='터치하면 멈춥니다!'; 
     reel.classList.add('spinning'); 
+    if(autoType === 'full') startFullAutoSequence();
   } else if(slotState===1){
     slotState=2; btn.disabled=true; btn.textContent='...결과 확인중...'; 
     reel.classList.remove('spinning'); 
 
     let ticks = 0; let delay = 90;
+    let isSecret = (phase === 'person' || playMode === 'personOnly') ? isPersonSecret() : isRoleSecret();
     function slowDown() {
         ticks++; delay *= 1.4;
-        reel.textContent = pool[Math.floor(Math.random()*pool.length)].text;
+        reel.textContent = isSecret ? "🔒 비밀" : pool[Math.floor(Math.random()*pool.length)].text;
         
         if(ticks < 6) {
             setTimeout(slowDown, delay);
         } else {
             const winIdx=Math.floor(Math.random()*pool.length); 
             const winner=pool[winIdx]; 
-            const isTroll=pool.length>=3&&Math.random()<0.25; 
+            const isTroll=pool.length>=3&&Math.random()<0.25&&!isSecret; 
             
             if(isTroll){
                 const fakeIdx=(winIdx+1)%pool.length; reel.textContent=pool[fakeIdx].text; 
@@ -1414,7 +1636,7 @@ function clickSlot(){
                     },150);
                 },800);
             } else {
-                reel.textContent=winner.text; lbl.textContent='🎉 당첨!'; finishSlot(winner);
+                reel.textContent=isSecret ? "🔒 비밀" : winner.text; lbl.textContent='🎉 당첨!'; finishSlot(winner);
             }
         }
     }
@@ -1422,16 +1644,34 @@ function clickSlot(){
   }
 }
 function finishSlot(item){document.getElementById('slot-btn').disabled=false; vibrate([100,50,100]); onPicked(item);}
-function initCards(){const pool=getPool(), sh=shuffle([...pool]), cfg=S[season]; document.getElementById('cards-grid').innerHTML=sh.map((item,i)=>`<div class="fcard" id="fc-${i}" onclick="flipPick(${i}, '${item.id}')"><div class="fcard-inner"><div class="fc-front">?</div><div class="fc-back" style="background:${cfg.bgs[i%cfg.bgs.length]};color:${cfg.colors[i%cfg.colors.length]};border-color:${cfg.colors[i%cfg.colors.length]}55">${item.text}</div></div></div>`).join('');}
-function flipPick(i,itemId){const el=document.getElementById('fc-'+i); if(!el||el.classList.contains('flipped')||el.classList.contains('used'))return; document.querySelectorAll('.fcard').forEach(c=>{c.classList.add('used');c.style.opacity='.32';c.style.cursor='default';}); el.style.opacity='1'; el.classList.add('flipped'); vibrate(80); const pool=getPool(); const obj=pool.find(p=>p.id===itemId); setTimeout(()=>onPicked(obj),560);}
+
+function initCards(){
+    const pool=getPool(), sh=shuffle([...pool]), cfg=S[season]; 
+    let isSecret = (phase === 'person' || playMode === 'personOnly') ? isPersonSecret() : isRoleSecret();
+    document.getElementById('cards-grid').innerHTML=sh.map((item,i)=>`<div class="fcard" id="fc-${i}" onclick="flipPick(${i}, '${item.id}')"><div class="fcard-inner"><div class="fc-front">?</div><div class="fc-back" style="background:${cfg.bgs[i%cfg.bgs.length]};color:${cfg.colors[i%cfg.colors.length]};border-color:${cfg.colors[i%cfg.colors.length]}55">${isSecret ? "🔒 비밀" : item.text}</div></div></div>`).join('');
+}
+function flipPick(i,itemId){
+    clearFullAutoTimer();
+    const el=document.getElementById('fc-'+i); if(!el||el.classList.contains('flipped')||el.classList.contains('used'))return; document.querySelectorAll('.fcard').forEach(c=>{c.classList.add('used');c.style.opacity='.32';c.style.cursor='default';}); el.style.opacity='1'; el.classList.add('flipped'); vibrate(80); const pool=getPool(); const obj=pool.find(p=>p.id===itemId); setTimeout(()=>onPicked(obj),560);
+}
 
 /* ═══════════════════════════════════════
-   LADDER 🪜 (완벽 시각적 복구 추가)
+   LADDER 🪜 
 ═══════════════════════════════════════ */
 let ladData=null;
 let ladSelectedPersonIdx = -1;
 
 function initLadder(){
+  if (ladData) {
+      renderLadPeople();
+      document.getElementById('lad-top').innerHTML = origP.map((p, i) =>
+          `<div class="l-name l-clickable" id="lt-${i}" onclick="selectLadderLine(${i})">선택 ↓</div>`
+      ).join('');
+      document.getElementById('lad-bot').innerHTML = ladData.botPool.map((_, i) => `<div class="l-res" id="lb-${i}">${isRoleSecret() ? "🔒" : "?"}</div>`).join('');
+      redrawFullLadder();
+      return;
+  }
+
   const N = Math.max(origP.length, origR.length); 
   const botPool = shuffle([...origR]).slice(0, N); 
 
@@ -1455,11 +1695,15 @@ function initLadder(){
   ladData = { N, rungs, mg, step, W, canvasH, animating: false, botPool, usedCols: new Set(), history: [] };
   ladSelectedPersonIdx = -1;
 
+  document.getElementById('lad-people-pool').style.display = 'flex';
+  document.getElementById('lad-top').style.display = 'flex';
+  document.getElementById('lad-guide-txt').style.display = 'block';
+
   renderLadPeople();
   document.getElementById('lad-top').innerHTML = Array.from({length: N}).map((_, i) =>
       `<div class="l-name l-clickable" id="lt-${i}" onclick="selectLadderLine(${i})">선택 ↓</div>`
   ).join('');
-  document.getElementById('lad-bot').innerHTML = botPool.map((_, i) => `<div class="l-res" id="lb-${i}">?</div>`).join('');
+  document.getElementById('lad-bot').innerHTML = botPool.map((_, i) => `<div class="l-res" id="lb-${i}">${isRoleSecret() ? "🔒" : "?"}</div>`).join('');
 
   const cv = document.getElementById('ladCanvas'); cv.width = W; cv.height = canvasH;
   drawLadderBase();
@@ -1499,6 +1743,7 @@ function selectLadderLine(col){
       showToast('👆 먼저 탈 사람(이름)을 선택해주세요!');
       return;
   }
+  clearFullAutoTimer();
 
   const pObj = origP[ladSelectedPersonIdx];
   const pIdx = ladSelectedPersonIdx;
@@ -1536,12 +1781,14 @@ function selectLadderLine(col){
       setTimeout(() => {
         const rObj = ladData.botPool[curCol];
         const el = document.getElementById('lb-' + curCol);
-        el.textContent = rObj.text; el.style.color = color; el.style.fontWeight = '700'; el.style.background = cfg.bgs[col % cfg.bgs.length]; el.style.borderRadius = '8px'; el.style.padding = '4px 6px';
         
-        const record = {person: pObj.text, role: rObj.text};
+        el.textContent = isRoleSecret() ? "🔒 비밀" : rObj.text; 
+        el.style.color = color; el.style.fontWeight = '700'; el.style.background = cfg.bgs[col % cfg.bgs.length]; el.style.borderRadius = '8px'; el.style.padding = '4px 6px';
+        
+        const record = {person: pObj.text, role: rObj.text, extra: getPenaltyText(pObj.text)};
         const hObj = {col, color, pText: pObj.text, rText: rObj.text, path, destCol: curCol};
         
-        redoStack = []; // 수동 진행 시 Redo Stack 클리어 (이중클릭 버그 방지)
+        clearRedoStackOnManualPlay();
 
         ladData.history.push(hObj);
         undoStack.push({type:'ladder', col: col, pIdx: pIdx, person: pObj, role: rObj, historyObj: hObj});
@@ -1583,7 +1830,7 @@ function redrawFullLadder() {
 
     for(let i=0; i < ladData.botPool.length; i++) {
         const el = document.getElementById('lb-' + i);
-        el.textContent = '?'; el.style.background = ''; el.style.color = ''; el.style.fontWeight = '';
+        el.textContent = isRoleSecret() ? "🔒" : '?'; el.style.background = ''; el.style.color = ''; el.style.fontWeight = '';
     }
 
     ladData.history.forEach(h => {
@@ -1599,7 +1846,8 @@ function redrawFullLadder() {
         ctx.beginPath(); ctx.arc(h.path[h.path.length-1].x, h.path[h.path.length-1].y, 6, 0, Math.PI * 2); ctx.fill();
 
         const el = document.getElementById('lb-' + h.destCol);
-        el.textContent = h.rText; el.style.color = h.color; el.style.fontWeight = '700';
+        el.textContent = isRoleSecret() ? "🔒 비밀" : h.rText; 
+        el.style.color = h.color; el.style.fontWeight = '700';
         el.style.background = S[season].bgs[h.col % S[season].bgs.length]; el.style.borderRadius = '8px'; el.style.padding = '4px 6px';
         
         const ltEl = document.getElementById('lt-' + h.col);
@@ -1612,24 +1860,30 @@ function redrawFullLadder() {
    PICK LOGIC & UNDO EXECUTOR
 ═══════════════════════════════════════ */
 function onPicked(item, isAuto = false){
-  redoStack=[]; 
+  clearRedoStackOnManualPlay();
   if(playMode==='personOnly'){
-      undoStack.push({type:'single_p', item}); results.push({single: item.text});
+      undoStack.push({type:'single_p', item}); results.push({single: item.text, extra: getPenaltyText(item.text)});
       remainP=remainP.filter(p=>p.id!==item.id); checkEndCondition(isAuto);
   } else if(playMode==='roleOnly'){
-      undoStack.push({type:'single_r', item}); results.push({single: item.text});
+      undoStack.push({type:'single_r', item}); results.push({single: item.text, extra: getPenaltyText('누군가')});
       remainR=remainR.filter(r=>r.id!==item.id); checkEndCondition(isAuto);
   } else {
       if(phase==='person'){
         undoStack.push({type:'person', item}); pickedPerson=item; phase='role';
         updateProgress(); updateBadge(); updateRemaining(); updateUndoRedoUI();
         if(!checkAutoSkip()) { 
-            document.getElementById('next-wrap').style.display='block'; 
-            const nb=document.getElementById('next-btn'); nb.textContent=`${item.text}의 역할 뽑기 →`; nb.onclick=nextPhase;
+            if(autoType === 'semi' || autoType === 'full') {
+                autoTransitionTimer = setTimeout(()=>nextPhase(), 800);
+            } else {
+                document.getElementById('next-wrap').style.display='block'; 
+                const nb=document.getElementById('next-btn'); 
+                nb.textContent = isPersonSecret() ? `🔒 다음 진행 →` : `${item.text}의 역할 뽑기 →`; 
+                nb.onclick=nextPhase;
+            }
         }
       } else {
         undoStack.push({type:'pair', person:pickedPerson, role:item});
-        results.push({person:pickedPerson.text, role:item.text});
+        results.push({person:pickedPerson.text, role:item.text, extra: getPenaltyText(pickedPerson.text)});
         remainP=remainP.filter(p=>p.id!==pickedPerson.id); remainR=remainR.filter(r=>r.id!==item.id);
         pickedPerson=null; phase='person'; checkEndCondition(isAuto);
       }
@@ -1647,18 +1901,26 @@ function checkEndCondition(isAuto) {
     if(isDone){ showDone(); }
     else {
       if(!checkAutoSkip()) {
-          document.getElementById('next-wrap').style.display='block';
-          updateUndoRedoUI();
-          const nb=document.getElementById('next-btn'); nb.textContent='다음 뽑기 →'; nb.onclick=nextRound;
+          if(autoType === 'semi' || autoType === 'full') {
+              autoTransitionTimer = setTimeout(() => {
+                  if(phase === 'role') nextPhase();
+                  else nextRound();
+              }, 800);
+          } else {
+              document.getElementById('next-wrap').style.display='block';
+              updateUndoRedoUI();
+              const nb=document.getElementById('next-btn'); 
+              nb.textContent = secretType !== 'none' ? `🔒 다음 진행 →` : '다음 뽑기 →'; 
+              nb.onclick=nextRound;
+          }
       }
     }
     updateProgress(); updateRemaining(); updateUndoRedoUI();
 }
 
-function nextPhase(){document.getElementById('next-wrap').style.display='none'; updateBadge(); if(gameMode==='roulette')initRou(); if(gameMode==='card')initCards(); if(gameMode==='slot')initSlot(); if(gameMode==='timer')initTimer();}
+function nextPhase(){document.getElementById('next-wrap').style.display='none'; updateBadge(); if(gameMode==='roulette')initRou(); if(gameMode==='card')initCards(); if(gameMode==='slot')initSlot(); if(gameMode==='timer')initTimer(); if(autoType === 'full') startFullAutoSequence();}
 function nextRound(){document.getElementById('next-wrap').style.display='none'; renderGameUI();}
 
-// 실제 Undo 실행 함수 (팝업에서 확인 누른 후)
 function performUndo(){
   if(!undoStack.length)return; const last=undoStack.pop(); redoStack.push(last); 
   
@@ -1671,14 +1933,19 @@ function performUndo(){
       redrawFullLadder(); renderLadPeople(); updateBadge(); updateProgress();
       const ltEl = document.getElementById('lt-' + last.col);
       ltEl.textContent = '선택 ↓'; ltEl.className = 'l-name l-clickable'; ltEl.style.color = ''; ltEl.style.fontWeight = '';
+      
+      renderResultList();
+      if(results.length === 0) document.getElementById('result-wrap').style.display='none';
   }
   else if(last.type==='timer') {
       timerRecords.pop();
       timerCurrentIdx--;
       initTimer();
       document.getElementById('next-wrap').style.display = 'none';
-      document.getElementById('result-wrap').style.display = 'none'; 
       updateBadge(); updateProgress();
+      
+      renderResultList();
+      if(results.length === 0) document.getElementById('result-wrap').style.display='none';
   }
   else if(last.type==='single_p'){results.pop(); remainP.unshift(last.item);}
   else if(last.type==='single_r'){results.pop(); remainR.unshift(last.item);}
@@ -1686,10 +1953,16 @@ function performUndo(){
   else {results.pop(); remainP.push(last.person); remainR.push(last.role); pickedPerson=null; phase='person';}
   
   document.getElementById('done-wrap').style.display='none'; 
-  if(gameMode !== 'ladder' && gameMode !== 'timer') {
+  document.getElementById('done-secret-wrap').style.display='none';
+  
+  if(gameMode === 'ladder') {
+      document.getElementById('lad-people-pool').style.display = 'flex';
+      document.getElementById('lad-top').style.display = 'flex';
+      document.getElementById('lad-guide-txt').style.display = 'block';
+  } else if(gameMode !== 'timer') {
       document.getElementById('rem-section').style.display='block'; 
   }
-  isGameFinished = false; // 완료 화면에서 되돌리기 시 상태 갱신
+  isGameFinished = false; 
   renderGameUI(); showToast('↩ 되돌렸어요');
 }
 
@@ -1699,28 +1972,36 @@ function redoLast(){
   
   if(item.type==='ladder') {
       undoStack.push(item);
-      results.push({person: item.person.text, role: item.role.text});
+      results.push({person: item.person.text, role: item.role.text, extra: getPenaltyText(item.person.text)});
       ladData.usedCols.add(item.col);
       ladData.history.push(item.historyObj);
       
-      redrawFullLadder(); renderLadPeople(); updateUndoRedoUI(); updateProgress();
+      redrawFullLadder(); renderLadPeople(); 
+      document.getElementById('result-wrap').style.display='block'; 
+      renderResultList();
+      updateProgress(); updateUndoRedoUI();
+      
       if(results.length >= origP.length) setTimeout(showDone, 600); else updateBadge(); 
   }
   else if(item.type==='timer') {
       undoStack.push(item);
       timerRecords.push(item.record);
       timerCurrentIdx++;
-      updateUndoRedoUI(); updateProgress(); updateBadge();
+      
+      document.getElementById('result-wrap').style.display='block'; 
+      renderResultList(); 
+      updateProgress(); updateBadge(); updateUndoRedoUI();
+      
       if (timerCurrentIdx < origP.length) {
           initTimer();
       } else {
-          finishTimerMode();
+          finishTimerMode(); 
       }
   }
-  else if(item.type==='person'){undoStack.push(item); pickedPerson=item.item; phase='role'; updateProgress(); updateBadge(); updateRemaining(); document.getElementById('next-wrap').style.display='block'; updateUndoRedoUI(); const nb=document.getElementById('next-btn'); nb.textContent=`${item.item.text}의 역할 뽑기 →`; nb.onclick=nextPhase;}
-  else if(item.type==='pair'){undoStack.push(item); results.push({person:item.person.text, role:item.role.text}); remainP=remainP.filter(p=>p.id!==item.person.id); remainR=remainR.filter(r=>r.id!==item.role.id); pickedPerson=null; phase='person'; checkEndCondition();}
-  else if(item.type==='single_p'){undoStack.push(item); results.push({single: item.item.text}); remainP=remainP.filter(p=>p.id!==item.item.id); checkEndCondition();}
-  else if(item.type==='single_r'){undoStack.push(item); results.push({single: item.item.text}); remainR=remainR.filter(r=>r.id!==item.item.id); checkEndCondition();}
+  else if(item.type==='person'){undoStack.push(item); pickedPerson=item.item; phase='role'; updateProgress(); updateBadge(); updateRemaining(); document.getElementById('next-wrap').style.display='block'; updateUndoRedoUI(); const nb=document.getElementById('next-btn'); nb.textContent = isPersonSecret() ? `🔒 다음 진행 →` : `${item.item.text}의 역할 뽑기 →`; nb.onclick=nextPhase;}
+  else if(item.type==='pair'){undoStack.push(item); results.push({person:item.person.text, role:item.role.text, extra: getPenaltyText(item.person.text)}); remainP=remainP.filter(p=>p.id!==item.person.id); remainR=remainR.filter(r=>r.id!==item.role.id); pickedPerson=null; phase='person'; checkEndCondition();}
+  else if(item.type==='single_p'){undoStack.push(item); results.push({single: item.item.text, extra: getPenaltyText(item.item.text)}); remainP=remainP.filter(p=>p.id!==item.item.id); checkEndCondition();}
+  else if(item.type==='single_r'){undoStack.push(item); results.push({single: item.item.text, extra: getPenaltyText('누군가')}); remainR=remainR.filter(r=>r.id!==item.item.id); checkEndCondition();}
   
   if(gameMode !== 'ladder' && gameMode !== 'timer') renderGameUI();
   showToast('↪ 다시 적용했어요');
@@ -1730,33 +2011,80 @@ function renderResultList(){
   const cfg=S[season];
   document.getElementById('result-list').innerHTML=results.map((r,i)=>{
     const c=cfg.colors[i%cfg.colors.length], bg=cfg.bgs[i%cfg.bgs.length];
-    if(gameMode === 'timer') {
+    
+    let displayNum = i + 1;
+    let displayPerson = r.person || r.single;
+    let displayRole = r.role;
+    let displayExtra = r.extra;
+    
+    if(!isSecretRevealed) {
+        if(isPersonSecret()) {
+            displayNum = "🔒"; displayPerson = "???"; displayExtra = "";
+        }
+        if(isRoleSecret()) {
+            displayNum = "🔒"; displayRole = "🔒 비밀"; displayExtra = "";
+            if(r.single) displayPerson = "🔒 비밀";
+        }
+    }
+
+    if(gameMode === 'timer' || playMode === 'both' || r.person){
         return `<div class="result-row ${i===results.length-1?'new':''}">
-          <div class="r-num" style="background:${bg};color:${c};border:1.5px solid ${c}44">${i+1}</div>
-          <div class="r-person" style="color:${c}; display:flex; flex-direction:column; flex:1;">
-            <span style="font-size:16px; font-weight:700;">${r.person}</span>
-            <span style="font-size:11px; color:var(--muted); font-weight:400; margin-top:2px;">${r.extra}</span>
-          </div>
-        </div>`;
-    } else if(playMode==='both' || r.person){
-        return `<div class="result-row ${i===results.length-1?'new':''}">
-          <div class="r-num" style="background:${bg};color:${c};border:1.5px solid ${c}44">${i+1}</div>
+          <div class="r-num" style="background:${bg};color:${c};border:1.5px solid ${c}44">${displayNum}</div>
           <div class="r-person" style="color:${c}; display:flex; flex-direction:column;">
-            <span>${r.person}</span>
-            ${r.extra ? `<span style="font-size:10px; color:var(--muted); font-weight:400; margin-top:2px;">${r.extra}</span>` : ''}
+            <span>${displayPerson}</span>
+            ${displayExtra ? `<span style="font-size:10px; color:var(--muted); font-weight:400; margin-top:2px;">${displayExtra}</span>` : ''}
           </div>
           <div class="r-arrow">→</div>
-          <div class="r-role">${r.role}</div>
+          <div class="r-role">${displayRole}</div>
         </div>`;
     } else {
         return `<div class="result-row ${i===results.length-1?'new':''}">
-          <div class="r-num" style="background:${bg};color:${c};border:1.5px solid ${c}44">${i+1}</div>
-          <div class="r-role" style="font-weight:700; color:${c}">${r.single}</div>
+          <div class="r-num" style="background:${bg};color:${c};border:1.5px solid ${c}44">${displayNum}</div>
+          <div class="r-role" style="font-weight:700; color:${c}; display:flex; flex-direction:column;">
+            <span>${displayPerson}</span>
+            ${displayExtra ? `<span style="font-size:10px; color:var(--muted); font-weight:400; margin-top:2px;">${displayExtra}</span>` : ''}
+          </div>
         </div>`;
     }
   }).join('');
 }
-function showDone(){isGameFinished = true; document.getElementById('next-wrap').style.display='none'; document.getElementById('done-wrap').style.display='block'; document.getElementById('rem-section').style.display='none'; ['roulette','card','ladder','slot','timer'].forEach(m=>document.getElementById('mode-'+m).style.display='none'); vibrate([100,50,100]); saveToHistory(); updateUndoRedoUI();}
+
+function revealSecret() {
+    isSecretRevealed = true;
+    if(gameMode === 'timer') {
+        timerRecords.sort((a, b) => a.error - b.error);
+        results = [];
+        timerRecords.forEach((rec) => {
+            results.push({ person: rec.person.text, role: `오차 ${rec.error.toFixed(2)}초`, extra: getPenaltyText(rec.person.text) });
+        });
+    }
+    document.getElementById('done-secret-wrap').style.display = 'none';
+    document.getElementById('done-wrap').style.display = 'block';
+    renderResultList(); 
+    vibrate([100, 100, 100]);
+}
+
+function showDone(){
+    isGameFinished = true; 
+    updateBadge();
+    document.getElementById('next-wrap').style.display='none'; 
+    document.getElementById('rem-section').style.display='none'; 
+    ['roulette','card','ladder','slot','timer'].forEach(m=>document.getElementById('mode-'+m).style.display='none'); 
+    
+    if(gameMode === 'ladder') {
+        document.getElementById('lad-people-pool').style.display = 'none';
+        document.getElementById('lad-top').style.display = 'none';
+        document.getElementById('lad-guide-txt').style.display = 'none';
+    }
+
+    if(secretType !== 'none' && !isSecretRevealed) {
+        document.getElementById('done-secret-wrap').style.display='block';
+    } else {
+        document.getElementById('done-wrap').style.display='block'; 
+    }
+    vibrate([100,50,100]); saveToHistory(); updateUndoRedoUI();
+}
+
 function rerollAll(){
   resetGameVariables();
   if(gameMode === 'timer') { timerCurrentIdx = 0; timerRecords = []; timerState = 0; initTimer(); }
@@ -1766,7 +2094,14 @@ function rerollAll(){
   phase=playMode==='roleOnly'?'single':(playMode==='personOnly'?'single':'person');
   
   if(gameMode !== 'ladder' && gameMode !== 'timer') document.getElementById('rem-section').style.display='block'; 
-  document.getElementById('done-wrap').style.display='none'; renderGameUI();
+  
+  if(gameMode === 'ladder') {
+      document.getElementById('lad-people-pool').style.display = 'flex';
+      document.getElementById('lad-top').style.display = 'flex';
+      document.getElementById('lad-guide-txt').style.display = 'block';
+  }
+
+  document.getElementById('done-wrap').style.display='none'; document.getElementById('done-secret-wrap').style.display='none'; document.getElementById('resume-fab').style.display='none'; renderGameUI();
 }
 
 /* ═══════════════════════════════════════
@@ -1790,17 +2125,20 @@ function saveAsImage(){
     ctx.fillStyle=cbg; ctx.shadowColor='rgba(0,0,0,.07)'; ctx.shadowBlur=10; ctx.shadowOffsetY=3; rr(ctx,PAD,cy,W-PAD*2,CH,14); ctx.fill(); ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0; ctx.strokeStyle=col+'44'; ctx.lineWidth=1.5; rr(ctx,PAD,cy,W-PAD*2,CH,14); ctx.stroke();
     ctx.fillStyle=col; rr(ctx,PAD,cy+12,5,CH-24,3); ctx.fill(); ctx.fillStyle=col+'20'; ctx.beginPath(); ctx.arc(PAD+24,cy+CH/2,15,0,Math.PI*2); ctx.fill(); ctx.fillStyle=col; ctx.font='bold 12px sans-serif'; ctx.textAlign='center'; ctx.fillText(String(i+1).padStart(2,'0'),PAD+24,cy+CH/2+4); ctx.textAlign='left';
     
-    if(gameMode === 'timer') {
-        ctx.fillStyle=col; ctx.font='bold 17px sans-serif'; ctx.fillText(r.person,PAD+46,cy+CH/2 - 2);
-        ctx.fillStyle='rgba(0,0,0,.4)'; ctx.font='12px sans-serif'; ctx.fillText(r.extra, PAD+46, cy+CH/2+14);
-    } else if(playMode==='both' || r.person){
-        ctx.fillStyle=col; ctx.font='bold 17px sans-serif'; ctx.fillText(r.person,PAD+46,cy+CH/2 - (r.extra?8:5));
-        ctx.fillStyle='rgba(0,0,0,.55)'; ctx.font='13px sans-serif'; ctx.fillText('→  '+r.role, PAD+46 + ctx.measureText(r.person).width + 12, cy+CH/2 - (r.extra?8:5));
-        if(r.extra) {
-            ctx.fillStyle='rgba(0,0,0,.4)'; ctx.font='11px sans-serif'; ctx.fillText(r.extra, PAD+46, cy+CH/2+11);
-        }
+    let displayPerson = r.person || r.single; let displayRole = r.role; let displayExtra = r.extra;
+    if(secretType !== 'none' && !isSecretRevealed) { 
+        if(isPersonSecret()) displayPerson = "???"; 
+        if(isRoleSecret()) { displayRole = "🔒 비밀"; if(r.single) displayPerson = "🔒 비밀"; }
+        displayExtra = "(기록 숨김)"; 
+    }
+
+    if(gameMode === 'timer' || playMode==='both' || r.person){
+        ctx.fillStyle=col; ctx.font='bold 17px sans-serif'; ctx.fillText(displayPerson,PAD+46,cy+CH/2 - (displayExtra?8:5));
+        ctx.fillStyle='rgba(0,0,0,.55)'; ctx.font='13px sans-serif'; ctx.fillText('→  '+displayRole, PAD+46 + ctx.measureText(displayPerson).width + 12, cy+CH/2 - (displayExtra?8:5));
+        if(displayExtra) { ctx.fillStyle='rgba(0,0,0,.4)'; ctx.font='11px sans-serif'; ctx.fillText(displayExtra, PAD+46, cy+CH/2+11); }
     } else {
-        ctx.fillStyle=col; ctx.font='bold 16px sans-serif'; ctx.fillText(r.single,PAD+46,cy+CH/2+6);
+        ctx.fillStyle=col; ctx.font='bold 16px sans-serif'; ctx.fillText(displayPerson,PAD+46,cy+CH/2 - (displayExtra?8:5));
+        if(displayExtra) { ctx.fillStyle='rgba(0,0,0,.4)'; ctx.font='11px sans-serif'; ctx.fillText(displayExtra, PAD+46, cy+CH/2+11); }
     }
   });
 
@@ -1809,9 +2147,19 @@ function saveAsImage(){
 }
 function rr(ctx,x,y,w,h,r){ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();}
 
-function shareResult(){const pname=loadP()[activePreset]?.name||'여행'; const lines=results.map((r,i)=>{if(gameMode === 'timer') return `${i+1}등. ${r.person} ${r.extra}`; if(playMode==='both' || r.person) return `${i+1}. ${r.person} → ${r.role} ${r.extra?r.extra:''}`; return `${i+1}. ${r.single}`;}).join('\n'); const text=`✈ ${pname} 결과\n\n${lines}\n\n#여행역할정하기`; if(navigator.share){navigator.share({title:'여행 역할 배정',text}).catch(()=>{});}else{navigator.clipboard.writeText(text).then(()=>showToast('📋 복사됐어요!')).catch(()=>prompt('복사해주세요!',text));}}
+function shareResult(){const pname=loadP()[activePreset]?.name||'여행'; const lines=results.map((r,i)=>{
+    let displayPerson = r.person || r.single; let displayRole = r.role; let displayExtra = r.extra;
+    if(secretType !== 'none' && !isSecretRevealed) { 
+        if(isPersonSecret()) displayPerson = "???"; 
+        if(isRoleSecret()) { displayRole = "🔒 비밀"; if(r.single) displayPerson = "🔒 비밀"; }
+        displayExtra = "(기록 숨김)"; 
+    }
+    
+    if(gameMode === 'timer' || playMode==='both' || r.person) return `${i+1}. ${displayPerson} → ${displayRole} ${displayExtra?displayExtra:''}`; return `${i+1}. ${displayPerson} ${displayExtra?displayExtra:''}`;}).join('\n'); const text=`✈ ${pname} 결과\n\n${lines}\n\n#여행역할정하기`; if(navigator.share){navigator.share({title:'여행 역할 배정',text}).catch(()=>{});}else{navigator.clipboard.writeText(text).then(()=>showToast('📋 복사됐어요!')).catch(()=>prompt('복사해주세요!',text));}}
+
 function saveToHistory(){
     const pname=loadP()[activePreset]?.name||'여행'; const h=loadH(); const now=new Date(); 
+    
     h.unshift({
         id:Date.now(),
         title:pname,
@@ -1827,7 +2175,7 @@ function renderHistory(){
     const h=loadH(); const el=document.getElementById('history-list'); 
     if(!h.length){el.innerHTML='<div class="history-empty"><div class="he-icon">🗺️</div>아직 기록이 없어요<br>게임을 완료하면 여기 쌓여요!</div>'; return;} 
     
-    const gmIcons = {roulette:'🎡 룰렛', card:'🃏 카드뽑기', ladder:'🪜 사다리타기', slot:'🎪 슬롯머신', timer:'⏱️ 타이머'};
+    const gmIcons = {roulette:'🎡 룰렛', card:'🃏 카드뽑기', ladder:'🪜 사다리타기', slot:'🎪 슬롯머신', timer:'⏱️ 블라인드 타이머'};
 
     el.innerHTML=h.map(item=>{
         const cfg=S[item.season||'spring']; 
@@ -1843,12 +2191,10 @@ function renderHistory(){
             </div>
             <div class="h-rows">
                 ${item.results.map((r,i)=>{
-                    if(item.gameMode === 'timer') {
-                        return `<div class="h-row"><span class="h-person" style="color:${cfg.colors[i%cfg.colors.length]}">${r.person}</span><span class="h-sep"></span><span>${r.extra||''}</span></div>`;
-                    } else if(item.playMode==='both'||r.person){
+                    if(item.gameMode === 'timer' || item.playMode==='both'||r.person){
                         return `<div class="h-row"><span class="h-person" style="color:${cfg.colors[i%cfg.colors.length]}">${r.person}</span><span class="h-sep">→</span><span>${r.role||'통과/꽝'} ${r.extra?`<small style="color:var(--muted)">${r.extra}</small>`:''}</span></div>`;
                     } else {
-                        return `<div class="h-row"><span class="h-person" style="color:${cfg.colors[i%cfg.colors.length]}">${r.single}</span></div>`;
+                        return `<div class="h-row"><span class="h-person" style="color:${cfg.colors[i%cfg.colors.length]}">${r.single}</span> <span style="font-size:11px; color:var(--muted);">${r.extra||''}</span></div>`;
                     }
                 }).join('')}
             </div>
