@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- 👇 이 한 줄을 추가해 주세요! 구글 봇이 이 페이지를 수집하지 못하게 막습니다. -->
+<!-- 👇 구글 봇 수집 방지 -->
 <meta name="robots" content="noindex, nofollow">
 <title>✈ 여행 역할 정하기</title>
 <link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -83,9 +83,10 @@ body[data-route="setup"], body[data-route="game"], body[data-route="history"], b
 .btn-clear-soft{background:none; border:none; color:var(--muted); font-size:11px; font-weight:500; cursor:pointer; padding:4px 8px; border-radius:6px; transition:all 0.15s;}
 .btn-clear-soft:hover{background:var(--surface3); color:var(--accent);}
 
-input[type=text]{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;padding:9px 12px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .2s}
-input[type=text]:focus{border-color:var(--accent)}
-input[type=text]::placeholder{color:var(--muted);opacity:.7}
+input[type=text], input[type=number]{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;padding:9px 12px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .2s}
+input[type=text]:focus, input[type=number]:focus{border-color:var(--accent)}
+input[type=text]::placeholder, input[type=number]::placeholder{color:var(--muted);opacity:.7}
+
 .items-list{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
 .item-row{display:flex;align-items:center;gap:8px}
 .item-row input{flex:1}
@@ -124,7 +125,7 @@ body[data-route="select"] #wm-top-container, body[data-route="setup"] #wm-top-co
 body[data-route="splash"] #wm-bot-container, body[data-route="select"] #wm-bot-container { display: block; }
 
 .theme-fab {
-    display: none; position: fixed; bottom: 24px; right: 20px; width: 48px; height: 48px;
+    display: none; position: fixed; bottom: 84px; right: 20px; width: 48px; height: 48px;
     border-radius: 50%; background: var(--surface); border: 2px solid var(--border);
     align-items: center; justify-content: center; font-size: 22px;
     box-shadow: 0 4px 14px rgba(0,0,0,0.15); cursor: pointer; z-index: 200; transition: all 0.2s;
@@ -172,7 +173,8 @@ body[data-route="splash"] .theme-fab, body[data-route="select"] .theme-fab { dis
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 20px;border-radius:14px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;border:none;transition:all .15s}
 .btn:active{transform:scale(.96)}
-.btn-main{background:var(--btn-grad);color:#fff;width:100%;font-size:16px;padding:15px;box-shadow:var(--card-shadow);border-radius:16px}
+.btn:disabled{opacity:0.5; pointer-events:none;}
+.btn-main{background:var(--btn-grad);color:#fff;font-size:16px;box-shadow:var(--card-shadow);border-radius:16px}
 .btn-green{background:var(--chip-b-bg);color:var(--chip-b-c);border:1.5px solid var(--chip-b-b);font-size:13px;flex:1}
 .btn-red{background:#fff0f2;color:#c62828;border:1.5px solid #ffcdd2;font-size:13px;flex:1}
 .btn-ghost{background:var(--surface2);color:var(--text);border:1.5px solid var(--border);font-size:13px}
@@ -187,7 +189,7 @@ body[data-route="splash"] .theme-fab, body[data-route="select"] .theme-fab { dis
 /* ═══════════════════════════════════════
    TOAST & GAME HEADER
 ═══════════════════════════════════════ */
-.toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:10px 24px;border-radius:99px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .3s;white-space:nowrap;z-index:999;box-shadow:var(--card-shadow)}
+.toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:10px 24px;border-radius:99px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .3s;white-space:nowrap;z-index:9999;box-shadow:var(--card-shadow)}
 .toast.show{opacity:1}
 
 .game-header{padding:16px 20px 0;max-width:480px;margin:0 auto}
@@ -203,19 +205,33 @@ body[data-route="splash"] .theme-fab, body[data-route="select"] .theme-fab { dis
 .phase-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
 
 /* ═══════════════════════════════════════
+   UNDO POPUP (벌금 슬롯머신) / NAV WARNING MODAL
+═══════════════════════════════════════ */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9000; align-items:center; justify-content:center; padding:20px; }
+.undo-box { background:var(--surface); width:100%; max-width:360px; border-radius:24px; padding:24px 20px; text-align:center; box-shadow:0 12px 40px rgba(0,0,0,0.2); animation:sheetUp 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); }
+.undo-title { font-family:'Gmarket Sans',sans-serif; font-size:20px; font-weight:700; color:var(--text); margin-bottom:10px; line-height:1.3; }
+.undo-bank { display:inline-flex; align-items:center; gap:6px; background:var(--surface2); border:1.5px solid var(--border); padding:8px 14px; border-radius:10px; font-size:14px; font-weight:700; color:var(--accent); margin-bottom:24px; cursor:pointer; transition:all 0.15s; }
+.undo-bank:active { transform:scale(0.95); background:var(--surface3); }
+.undo-slot-wrap { background:var(--surface2); border:2.5px solid var(--border); border-radius:14px; padding:8px 16px; margin:0; position:relative; overflow:hidden; min-width:100px; text-align:center; }
+.undo-slot-val { font-family:'Gmarket Sans',sans-serif; font-size:26px; font-weight:700; color:var(--text); }
+.undo-slot-val.spinning { animation:slotSpin 0.08s linear infinite; filter:blur(1px); color:var(--accent2); }
+.undo-desc { font-size:12px; color:var(--muted); margin-bottom:24px; font-weight:500;}
+.undo-btn-row { display:flex; flex-direction:row; gap:10px; width:100%; justify-content:center; }
+
+/* ═══════════════════════════════════════
+   EDGE PANEL (이어서 하기)
+═══════════════════════════════════════ */
+#resume-fab { position: fixed; right: -5px; top: 50%; transform: translateY(-50%); background: var(--accent); color: #fff; padding: 14px 20px 14px 16px; border-radius: 30px 0 0 30px; font-family: 'Gmarket Sans', sans-serif; font-weight: 700; font-size: 15px; box-shadow: -4px 4px 14px rgba(0,0,0,0.25); z-index: 9999; cursor: pointer; display: none; align-items: center; gap: 6px; transition: all 0.2s; }
+#resume-fab:hover { right: 0; padding-right: 24px; }
+
+/* ═══════════════════════════════════════
    BLIND TIMER
 ═══════════════════════════════════════ */
-.timer-circle {
-  width: 220px; height: 220px; margin: 10px auto 20px; border-radius: 50%;
-  background: var(--surface2); border: 4px solid var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--card-shadow); cursor: pointer; transition: all 0.2s;
-}
+.timer-circle { width: 220px; height: 220px; margin: 10px auto 20px; border-radius: 50%; background: var(--surface2); border: 4px solid var(--accent); display: flex; align-items: center; justify-content: center; box-shadow: var(--card-shadow); cursor: pointer; transition: all 0.2s; }
 .timer-circle:active { transform: scale(0.95); }
-#timer-display {
-  font-family: 'Gmarket Sans', sans-serif; font-size: 28px; font-weight: 700;
-  color: var(--text); padding: 20px; text-align: center; word-break: keep-all; line-height: 1.4;
-}
+#timer-display { font-family: 'Gmarket Sans', sans-serif; font-size: 28px; font-weight: 700; color: var(--text); padding: 20px; text-align: center; word-break: keep-all; line-height: 1.4; }
+.timer-input-wrap { display:flex; align-items:center; justify-content:center; background:var(--surface2); border:1.5px solid var(--border); border-radius:10px; padding:0 10px; }
+.timer-input-wrap input { width:50px; text-align:center; font-size:18px; font-weight:700; color:var(--accent); border:none; background:transparent; padding:4px 0; outline:none; font-family:'Gmarket Sans',sans-serif; }
 
 /* ═══════════════════════════════════════
    ROULETTE & SLOT
@@ -232,7 +248,7 @@ body[data-route="splash"] .theme-fab, body[data-route="select"] .theme-fab { dis
 .slot-machine::after{bottom:0; background:linear-gradient(transparent,var(--surface));}
 .slot-window{text-align:center; width:100%;}
 .slot-reel{font-family:'Gmarket Sans',sans-serif; font-size:20px; font-weight:700; color:var(--text); line-height:1.3; padding:8px;}
-.slot-reel.spinning{animation:slotSpin .06s linear infinite; filter:blur(1px);}
+.slot-reel.spinning{animation:slotSpin .09s linear infinite; filter:blur(1px);}
 @keyframes slotSpin{0%{transform:translateY(-10px)}100%{transform:translateY(10px)}}
 .slot-label{font-size:14px; color:var(--muted); text-align:center; min-height:20px; font-weight:700;}
 
@@ -312,21 +328,15 @@ body[data-route="splash"] .bnav, body[data-route="select"] .bnav { transform: tr
 .theme-chip{padding:9px 14px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid transparent;background:var(--surface2);color:var(--text)}
 .theme-chip.active{border-color:var(--accent);background:var(--surface3);color:var(--accent)}
 
-/* 타이틀 가기 버튼 (워터마크에 안 겹치게 top: 32px 로 위치 조정) */
+/* 타이틀 가기 버튼 */
 .btn-title{
     position:fixed; top:32px; right:14px; z-index:100;
     background:rgba(255,255,255,.85); border:1.5px solid var(--border); border-radius:99px; 
     padding:5px 12px 5px 9px; font-size:12px; font-weight:700; color:var(--accent); cursor:pointer; 
     align-items:center; gap:4px; backdrop-filter:blur(6px); box-shadow:0 2px 10px rgba(0,0,0,.1);
-    display: none; /* 기본 숨김 */
+    display: none;
 }
-/* 특정 라우트일 때만 버튼 표시 */
-body[data-route="select"] .btn-title,
-body[data-route="setup"] .btn-title,
-body[data-route="game"] .btn-title,
-body[data-route="history"] .btn-title {
-    display: flex;
-}
+body[data-route="select"] .btn-title, body[data-route="setup"] .btn-title, body[data-route="game"] .btn-title, body[data-route="history"] .btn-title { display: flex; }
 
 .sp-season-row{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;justify-content:center}
 .sp-season-chip{padding:8px 16px;border-radius:99px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.5);color:var(--text);backdrop-filter:blur(4px)}
@@ -341,7 +351,7 @@ body[data-route="history"] .btn-title {
   <svg id="season-svg" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;opacity:.13"></svg>
 </div>
 
-<!-- 난독화된 Made by @swonyong 방어막 렌더링 컨테이너 -->
+<!-- 난독화된 방어막 렌더링 컨테이너 -->
 <div id="wm-top-container"></div>
 <div id="wm-bot-container"></div>
 
@@ -349,7 +359,7 @@ body[data-route="history"] .btn-title {
 <button class="theme-fab" id="theme-fab" onclick="toggleTheme(event)">🌸</button>
 
 <!-- 타이틀 가기 버튼 -->
-<button class="btn-title" onclick="goTitle()">✈️ 타이틀</button>
+<button class="btn-title" onclick="attemptNavTo('splash')">✈️ 타이틀</button>
 
 <div id="splash" onclick="onSplashClick(event)">
   <div class="sp-bg" id="sp-bg"></div>
@@ -366,6 +376,10 @@ body[data-route="history"] .btn-title {
   <div class="sp-tap">화면을 터치해서 시작</div>
 </div>
 
+<!-- 게임 이어서 하기 (엣지 패널) -->
+<div id="resume-fab" onclick="attemptNavTo('game')">
+    ▶ 이어하기
+</div>
 
 <!-- ══ GAME SELECTION SCREEN ══════════ -->
 <div id="screen-select" class="screen">
@@ -392,9 +406,8 @@ body[data-route="history"] .btn-title {
     </div>
   </div>
   
-  <button class="btn btn-main" style="margin-top: 24px;" onclick="goToSetup()">설정으로 이동 →</button>
+  <button class="btn btn-main" style="margin-top: 24px; padding:15px; width:100%;" onclick="attemptNavTo('setup')">설정으로 이동 →</button>
 </div>
-
 
 <!-- ══ SETUP ════════════════════════════════ -->
 <div id="screen-setup" class="screen">
@@ -404,7 +417,7 @@ body[data-route="history"] .btn-title {
         <span id="setup-mode-name" style="font-weight:700; font-size:15px; color:var(--text);">룰렛</span> 
         <span style="font-size:13px; color:var(--muted);">모드</span>
     </div>
-    <button class="btn-clear-soft" style="border: 1px solid var(--border);" onclick="navTo('select')">게임 변경</button>
+    <button class="btn-clear-soft" style="border: 1px solid var(--border);" onclick="attemptNavTo('select')">게임 변경</button>
   </div>
 
   <div class="card">
@@ -446,16 +459,30 @@ body[data-route="history"] .btn-title {
   <div class="card" id="timer-setup-area" style="display:none;">
     <div class="stepper" style="margin-bottom:0;">
       <label style="font-weight:700; color:var(--text);">⏱️ 목표 시간 (초)</label>
-      <div class="stepper-ctrl">
-        <button class="stp-btn" onclick="changeTimerTarget(-1)">−</button>
-        <span class="stp-val" id="timer-target-disp" style="color:var(--accent);">15</span>
-        <button class="stp-btn" onclick="changeTimerTarget(1)">+</button>
+      <div class="stepper-ctrl timer-input-wrap">
+        <button class="stp-btn" style="border:none; background:transparent;" onclick="changeTimerTarget(-1)">−</button>
+        <input type="number" id="timer-target-input" value="15" onchange="inputTimerTarget(this.value)" onkeyup="inputTimerTarget(this.value)">
+        <button class="stp-btn" style="border:none; background:transparent;" onclick="changeTimerTarget(1)">+</button>
       </div>
     </div>
     <p style="font-size:11px; color:var(--muted); text-align:center; margin-top:12px;">입력한 '역할 순서대로' 오차가 적은 1등부터 배정됩니다!</p>
   </div>
 
-  <button class="btn btn-main" onclick="startGame()">게임 시작 →</button>
+  <!-- 되돌리기 설정 추가 -->
+  <div class="card">
+    <div class="section-label" style="margin-bottom:8px">되돌리기 설정</div>
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+        <label style="font-size:13px; display:flex; align-items:center; gap:4px;"><input type="radio" name="undo_mode" value="auto" checked onchange="toggleUndoMode()"> 기본값</label>
+        <label style="font-size:13px; display:flex; align-items:center; gap:4px;"><input type="radio" name="undo_mode" value="custom" onchange="toggleUndoMode()"> 커스텀</label>
+        
+        <div id="undo-custom-area" style="display:none; align-items:center; gap:4px; margin-left:4px;">
+            <input type="number" id="undo-custom-input" value="1" min="0" style="width:40px; text-align:center; padding:2px; font-size:13px;" onchange="updateUndoCustom()">
+            <span style="font-size:13px; color:var(--muted);">회</span>
+        </div>
+    </div>
+  </div>
+
+  <button class="btn btn-main" style="padding:15px; width:100%;" onclick="startGame()">게임 시작 →</button>
 </div>
 
 <!-- ══ GAME ══════════════════════════════════ -->
@@ -463,12 +490,17 @@ body[data-route="history"] .btn-title {
   <div class="game-header">
     <div class="game-topbar">
       <div class="progress-bar" id="progress-bar"></div>
-      <button class="btn btn-undo" id="undo-btn" onclick="undoLast()" style="display:none">↩ 되돌리기</button>
-      <button class="btn btn-ghost" id="redo-btn" onclick="redoLast()" style="display:none;padding:5px 12px;font-size:12px">↪ 다시하기</button>
+      <button class="btn-clear-soft" onclick="if(confirm('진행 사항을 초기화하고 처음부터 다시 시작하시겠습니까?')) rerollAll();" style="display:flex; align-items:center; gap:2px; font-size:11px;">🔄 처음부터</button>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
-      <div class="phase-badge" id="phase-badge"></div>
+    
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn btn-undo" id="undo-btn" onclick="requestUndo()" style="display:none">↩ 되돌리기 (0회)</button>
+          <button class="btn btn-ghost" id="redo-btn" onclick="redoLast()" style="display:none;padding:5px 12px;font-size:12px">↪ 다시하기</button>
+        </div>
+        <div class="phase-badge" id="phase-badge" style="margin:0;"></div>
     </div>
+
     <div class="phase-title" id="phase-title"></div>
     <div class="phase-sub" id="phase-sub"></div>
   </div>
@@ -498,7 +530,8 @@ body[data-route="history"] .btn-title {
 
     <!-- 사다리타기 -->
     <div id="mode-ladder" style="display:none">
-      <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:8px">이름을 골라 진짜 사다리를 타보세요!</div>
+      <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:8px">1. 아래에서 이름을 선택하고<br>2. 사다리 시작점(선택)을 눌러주세요!</div>
+      <div id="lad-people-pool" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:12px;"></div>
       <div class="lad-top" id="lad-top"></div>
       <div style="overflow-x:auto; margin:10px 0;"><canvas id="ladCanvas" width="440" height="260" style="display:block;margin:0 auto;border-radius:14px;background:var(--surface2)"></canvas></div>
       <div class="lad-bot" id="lad-bot"></div>
@@ -533,7 +566,7 @@ body[data-route="history"] .btn-title {
     </div>
 
     <div id="next-wrap" style="display:none;margin-top:10px">
-      <button class="btn btn-role" id="next-btn">다음으로 →</button>
+      <button class="btn btn-role" id="next-btn" style="padding:15px; width:100%;">다음으로 →</button>
     </div>
 
     <div id="done-wrap" style="display:none;margin-top:10px">
@@ -551,6 +584,45 @@ body[data-route="history"] .btn-title {
       </div>
     </div>
   </div>
+</div>
+
+<!-- ══ UNDO POPUP MODAL (벌금 슬롯) ═══════════════ -->
+<div id="undo-modal" class="modal-overlay">
+    <div class="undo-box">
+        <div class="undo-title">💰 되돌리기 찬스</div>
+        
+        <!-- 계좌 클릭/터치 복사 영역 -->
+        <div class="undo-bank" onclick="copyAccount()" title="클릭하여 계좌 복사">
+            카카오뱅크 3333-10-2925510 <span style="font-size:16px;">📋</span>
+        </div>
+        
+        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom: 6px;">
+            <div class="undo-slot-wrap">
+                <div class="undo-slot-val" id="undo-slot-val">0</div>
+            </div>
+            <div id="undo-won-text" style="font-size:16px; font-weight:700; color:var(--text);">원 당첨!</div>
+        </div>
+        <div class="undo-desc" id="undo-desc">(입금 후 "되돌리기"를 진행하세요!)</div>
+        
+        <!-- 버튼 균일 비율 정렬 (가로 나란히) -->
+        <div class="undo-btn-row" id="undo-btn-group">
+            <button class="btn btn-main" style="flex:1; width:auto; padding:14px 0;" onclick="spinUndoSlot()" id="btn-undo-spin">슬롯돌리기</button>
+            <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal()" id="btn-undo-cancel">취소하기</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ NAV WARNING MODAL ═══════════════ -->
+<div id="nav-warn-modal" class="modal-overlay">
+    <div class="undo-box">
+        <div class="undo-title" style="font-size:18px;">🚨 진행 중인 게임이 있습니다!</div>
+        <div class="undo-desc" style="margin-bottom:20px; font-size:13px;">다른 메뉴로 이동하면 진행 상황이 초기화될 수 있습니다.</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn btn-main" style="padding:14px 0; font-size:14px;" onclick="saveAndNav()">현재 상황 저장 (이어서 가능)</button>
+            <button class="btn btn-red" style="padding:14px 0; font-size:14px;" onclick="exitAndNav()">저장하지 않고 나가기</button>
+            <button class="btn btn-soft" style="padding:14px 0; font-size:14px;" onclick="document.getElementById('nav-warn-modal').style.display='none'">취소</button>
+        </div>
+    </div>
 </div>
 
 <!-- ══ HISTORY & IMPORT & NAV ═══════════════ -->
@@ -574,7 +646,6 @@ body[data-route="history"] .btn-title {
     <button class="btn btn-soft" onclick="closeImportMenu()" style="width:100%;padding:11px;font-size:13px">취소</button>
   </div>
 </div>
-
 <div id="import-type-menu" style="display:none;position:fixed;inset:0;z-index:600;align-items:flex-end;justify-content:center">
   <div style="position:absolute;inset:0;background:rgba(0,0,0,.25)" onclick="closeImportType()"></div>
   <div style="position:relative;width:100%;max-width:480px;background:var(--surface);border-radius:24px 24px 0 0;padding:20px;box-shadow:0 -8px 32px rgba(0,0,0,.15);animation:sheetUp .25s ease">
@@ -595,13 +666,16 @@ body[data-route="history"] .btn-title {
 </div>
 
 <nav class="bnav">
-  <button class="bnav-btn active" id="nav-setup" onclick="navTo('setup')">
+  <button class="bnav-btn" id="nav-select" onclick="attemptNavTo('select')">
+    <span class="bnav-icon">🎮</span>게임선택
+  </button>
+  <button class="bnav-btn active" id="nav-setup" onclick="attemptNavTo('setup')">
     <span class="bnav-icon">⚙️</span>게임설정
   </button>
   <button class="bnav-btn" id="nav-theme" onclick="toggleTheme(event)">
     <span class="bnav-icon" id="theme-nav-icon">🌸</span>테마
   </button>
-  <button class="bnav-btn" id="nav-history" onclick="navTo('history')">
+  <button class="bnav-btn" id="nav-history" onclick="attemptNavTo('history')">
     <span class="bnav-icon">📋</span>기록
   </button>
 </nav>
@@ -624,8 +698,7 @@ body[data-route="history"] .btn-title {
    방어막 로직: 난독화 + Shadow DOM + MutationObserver
 ═══════════════════════════════════════ */
 (function(){
-    const b64Data = "TWFkZSBieSBAc3dvbnlvbmc="; // Made by @swonyong
-    
+    const b64Data = "TWFkZSBieSBAc3dvbnlvbmc="; 
     function createWatermarks() {
         let topContainer = document.getElementById('wm-top-container');
         if(topContainer && !topContainer.shadowRoot) {
@@ -649,7 +722,6 @@ body[data-route="history"] .btn-title {
             `;
         }
     }
-
     createWatermarks();
     const observer = new MutationObserver(() => {
         if(!document.getElementById('wm-top-container') || !document.getElementById('wm-bot-container')) {
@@ -699,7 +771,7 @@ function buildSplashFloats(cfg){
 }
 
 /* ═══════════════════════════════════════
-   STATE & STORAGE
+   STATE & STORAGE & NAVIGATION
 ═══════════════════════════════════════ */
 let memberCount=5, memberNames=['서원용','','','',''], roles=['','','','',''];
 let gameMode='roulette', activePreset=0;
@@ -710,6 +782,15 @@ let undoStack=[], redoStack=[];
 let timerTarget = 15; 
 let timerState = 0; let timerRecords = []; let timerCurrentIdx = 0; let tStart = 0; let tInt = null; let lastDistractorTime = 0;
 const distractors = ["지금 누를까?", "에이 벌써?", "앗, 늦었다!", "시간 멈췄나?", "방심 금물!", "침착해...", "마음속으로 세요!"];
+
+let undoConfigMode = 'auto'; 
+let undoCustomCount = 1;
+let maxUndoCount = 0;
+let currentUndoCount = 0;
+
+const penaltyAmounts = [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 'lucky'];
+let popupSlotInt = null;
+let isGameFinished = false; // 게임 종료 여부 확인용
 
 const DP=[
   {name:'양구 캠핑장',members:['서원용','송민준','김형진','이병영','장은재'],roles:['조수석에서 노래틀기','장보기','텐트치기','고기굽기','다음날 설거지 독박'],mode:'timer'},
@@ -723,9 +804,61 @@ function lsSet(k,v){localStorage.setItem(k,JSON.stringify(v));}
 function loadP(){return lsGet('tg_presets',()=>DP.map(p=>({...p})));}
 function loadH(){return lsGet('tg_history',[]);}
 
-/* ═══════════════════════════════════════
-   FLOW NAVIGATION
-═══════════════════════════════════════ */
+// 내비게이션 보호 (진행중인 게임 이탈 방지)
+let pendingNavId = null;
+
+function checkGameInProgress() {
+    if (isGameFinished) return false;
+    if (gameMode === 'timer') return timerCurrentIdx > 0;
+    if (gameMode === 'ladder') return results.length > 0;
+    return results.length > 0 || pickedPerson !== null;
+}
+
+function resetGameVariables() {
+    results = []; pickedPerson = null; undoStack = []; redoStack = [];
+    timerRecords = []; timerCurrentIdx = 0; timerState = 0;
+    isGameFinished = false;
+    if(ladData) ladData.history = [];
+}
+
+function attemptNavTo(id) {
+    if (id === 'game') {
+        document.getElementById('resume-fab').style.display = 'none';
+        navTo('game');
+        return;
+    }
+    if (checkGameInProgress()) {
+        pendingNavId = id;
+        document.getElementById('nav-warn-modal').style.display = 'flex';
+    } else {
+        navTo(id);
+        if(id === 'splash') executeGoTitle();
+    }
+}
+
+function executeGoTitle() {
+    const sp=document.getElementById('splash'); sp.style.display='flex'; sp.classList.remove('out'); 
+    const cfg=S[season]; sp.style.background=cfg.splash_bg; 
+    document.getElementById('sp-plane').textContent=cfg.plane; 
+    buildSplashFloats(cfg); closeTheme();
+    document.body.setAttribute('data-route', 'splash');
+}
+
+function saveAndNav() {
+    document.getElementById('nav-warn-modal').style.display = 'none';
+    document.getElementById('resume-fab').style.display = 'flex';
+    if(pendingNavId === 'splash') executeGoTitle();
+    else navTo(pendingNavId);
+}
+
+function exitAndNav() {
+    document.getElementById('nav-warn-modal').style.display = 'none';
+    document.getElementById('resume-fab').style.display = 'none';
+    resetGameVariables();
+    if(pendingNavId === 'splash') executeGoTitle();
+    else navTo(pendingNavId);
+}
+
 function initSplash(){
     const cfg=S[season]; const sp=document.getElementById('splash'); sp.style.background=cfg.splash_bg; 
     document.getElementById('sp-plane').textContent=cfg.plane; buildSplashFloats(cfg); 
@@ -733,15 +866,8 @@ function initSplash(){
 function onSplashClick(e){if(e.target.closest('.sp-season-row'))return; dismissSplash();}
 function dismissSplash(){
     const sp=document.getElementById('splash'); sp.classList.add('out'); 
-    setTimeout(()=>{sp.style.display='none';sp.classList.remove('out'); navTo('select');},520); 
+    setTimeout(()=>{sp.style.display='none';sp.classList.remove('out'); attemptNavTo('select');},520); 
     vibrate(50);
-}
-function goTitle(){
-    const sp=document.getElementById('splash'); sp.style.display='flex'; sp.classList.remove('out'); 
-    const cfg=S[season]; sp.style.background=cfg.splash_bg; 
-    document.getElementById('sp-plane').textContent=cfg.plane; 
-    buildSplashFloats(cfg); closeTheme();
-    document.body.setAttribute('data-route', 'splash');
 }
 
 let themeOpen=false;
@@ -754,6 +880,7 @@ function navTo(id){
     }); 
     document.getElementById('nav-setup').classList.toggle('active',id==='setup'||id==='game'); 
     document.getElementById('nav-history').classList.toggle('active',id==='history'); 
+    document.getElementById('nav-select').classList.toggle('active',id==='select');
     if(id==='history')renderHistory();
 }
 
@@ -783,7 +910,7 @@ function selectMode(m, el) {
 }
 function goToSetup() {
     updateSetupModeBanner();
-    navTo('setup');
+    attemptNavTo('setup');
 }
 function updateSetupModeBanner() {
     const icons = {roulette:'🎡', card:'🃏', ladder:'🪜', slot:'🎪', timer:'⏱️'};
@@ -813,14 +940,160 @@ function commitPN(i,val){const p=loadP(); const t=val.trim(); if(t===p[i].name)r
 function loadPreset(i){syncInputs(); activePreset=i; lsSet('tg_active',i); const p=loadP()[i]; memberCount=p.members.length||2; memberNames=[...p.members]; while(memberNames.length<memberCount)memberNames.push(''); roles=[...p.roles]; while(roles.length<memberCount)roles.push(''); gameMode=p.mode||'roulette'; document.getElementById('count-disp').textContent=memberCount; renderPresets(); renderNames(); renderRoles(); updateSetupModeBanner(); showToast(`프리셋 ${i+1} 불러왔어요!`);}
 function savePreset(){syncInputs(); const presets=loadP(); const ni=document.getElementById(`pni-${activePreset}`); const name=(ni?ni.value.trim():presets[activePreset].name)||`프리셋 ${activePreset+1}`; presets[activePreset]={name,members:[...memberNames],roles:[...roles],mode:gameMode}; lsSet('tg_presets',presets); renderPresets(); showToast('💾 저장됐어요!');}
 function syncInputs(){memberNames=Array.from({length:memberCount},(_,i)=>(document.getElementById('nm-'+i)?.value||memberNames[i]||'').trim()); roles=Array.from(document.querySelectorAll('#roles-list input')).map((el,i)=>el.value.trim()||roles[i]||'');}
-function changeCount(d){memberCount=Math.max(2,Math.min(10,memberCount+d)); while(memberNames.length<memberCount)memberNames.push(''); memberNames=memberNames.slice(0,memberCount); while(roles.length<memberCount)roles.push(''); if(roles.length>memberCount&&d<0)roles=roles.slice(0,memberCount); document.getElementById('count-disp').textContent=memberCount; renderNames(); renderRoles();}
+function changeCount(d){memberCount=Math.max(2,Math.min(10,memberCount+d)); while(memberNames.length<memberCount)memberNames.push(''); memberNames=memberNames.slice(0,memberCount); while(roles.length<memberCount)roles.push(''); if(roles.length>memberCount&&d<0)roles=roles.slice(0,memberCount); document.getElementById('count-disp').textContent=memberCount; renderNames(); renderRoles(); updateUndoMaxCount();}
 function renderNames(){document.getElementById('names-grid').innerHTML=Array.from({length:memberCount},(_,i)=>`<div class="name-field"><div class="name-num">${i+1}</div><input type="text" value="${memberNames[i]||''}" placeholder="이름을 입력하세요" id="nm-${i}" oninput="memberNames[${i}]=this.value"></div>`).join('');}
 function addRole(){roles.push('');renderRoles();setTimeout(()=>{const e=document.querySelectorAll('#roles-list input');e[e.length-1]?.focus();},40);}
 function removeRole(i){if(roles.length<=2)return;roles.splice(i,1);renderRoles();}
 function renderRoles(){document.getElementById('roles-list').innerHTML=roles.map((r,i)=>`<div class="item-row"><input type="text" value="${r}" placeholder="내용을 입력하시오" id="ri-${i}" oninput="roles[${i}]=this.value">${roles.length>2?`<button class="del-btn" onclick="removeRole(${i})">×</button>`:''}</div>`).join('');}
+
 function changeTimerTarget(d) {
     timerTarget = Math.max(5, Math.min(60, timerTarget + d));
-    document.getElementById('timer-target-disp').textContent = timerTarget;
+    document.getElementById('timer-target-input').value = timerTarget;
+}
+function inputTimerTarget(val) {
+    let t = parseInt(val);
+    if(isNaN(t)) return;
+    if(t < 5) t = 5; if(t > 60) t = 60;
+    timerTarget = t;
+}
+
+function toggleUndoMode() {
+    const radios = document.getElementsByName('undo_mode');
+    for(let i=0; i<radios.length; i++){
+        if(radios[i].checked) undoConfigMode = radios[i].value;
+    }
+    document.getElementById('undo-custom-area').style.display = (undoConfigMode === 'custom') ? 'flex' : 'none';
+}
+function updateUndoCustom() {
+    let val = parseInt(document.getElementById('undo-custom-input').value);
+    if(isNaN(val) || val < 0) val = 0;
+    undoCustomCount = val;
+    document.getElementById('undo-custom-input').value = val;
+}
+function updateUndoMaxCount() {
+    if(undoConfigMode === 'auto') {
+        maxUndoCount = Math.floor(memberCount * 0.3);
+    } else {
+        maxUndoCount = undoCustomCount;
+    }
+    currentUndoCount = maxUndoCount;
+}
+
+/* ═══════════════════════════════════════
+   UNDO MODAL LOGIC (벌금 슬롯)
+═══════════════════════════════════════ */
+function copyAccount() {
+    const text = '3333-10-2925510';
+    if(navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(()=>showToast('계좌번호가 복사되었습니다! 💸'));
+    } else {
+        const t = document.createElement('textarea');
+        t.value = text;
+        document.body.appendChild(t);
+        t.select();
+        document.execCommand('copy');
+        document.body.removeChild(t);
+        showToast('계좌번호가 복사되었습니다! 💸');
+    }
+    vibrate(30);
+}
+
+function updateUndoRedoUI() {
+    const undoBtn = document.getElementById('undo-btn');
+    undoBtn.textContent = `↩ 되돌리기 (${currentUndoCount}회)`;
+    undoBtn.disabled = currentUndoCount <= 0;
+    undoBtn.style.display = undoStack.length ? 'inline-flex' : 'none';
+
+    const redoBtn = document.getElementById('redo-btn');
+    redoBtn.style.display = redoStack.length ? 'inline-flex' : 'none';
+}
+
+function requestUndo() {
+    if(currentUndoCount <= 0) return;
+    
+    document.getElementById('undo-modal').style.display = 'flex';
+    document.getElementById('undo-slot-val').textContent = '0';
+    document.getElementById('undo-slot-val').classList.remove('spinning');
+    document.getElementById('undo-slot-val').style.color = 'var(--text)';
+    document.getElementById('undo-desc').textContent = '(입금 후 "되돌리기"를 진행하세요!)';
+    document.getElementById('undo-won-text').textContent = '원 당첨!';
+    
+    document.getElementById('undo-btn-group').innerHTML = `
+        <button class="btn btn-main" style="flex:1; width:auto; padding:14px 0;" onclick="spinUndoSlot()" id="btn-undo-spin">슬롯돌리기</button>
+        <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal()">취소하기</button>
+    `;
+}
+
+function closeUndoModal() {
+    if(popupSlotInt) clearInterval(popupSlotInt);
+    document.getElementById('undo-modal').style.display = 'none';
+}
+
+function spinUndoSlot() {
+    currentUndoCount--;
+    updateUndoRedoUI();
+
+    const valEl = document.getElementById('undo-slot-val');
+    valEl.classList.add('spinning');
+    
+    const btnGroup = document.getElementById('undo-btn-group');
+    btnGroup.innerHTML = `
+        <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" disabled>...결과 확인중...</button>
+    `;
+    
+    let ticks = 0; let delay = 60;
+    function slowDown() {
+        ticks++; delay *= 1.3;
+        const randomVal = penaltyAmounts[Math.floor(Math.random() * penaltyAmounts.length)];
+        valEl.textContent = randomVal === 'lucky' ? 'Lucky!' : randomVal.toLocaleString();
+        
+        if(ticks < 8) {
+            popupSlotInt = setTimeout(slowDown, delay);
+        } else {
+            valEl.classList.remove('spinning');
+            valEl.style.color = 'var(--accent)';
+            const finalVal = penaltyAmounts[Math.floor(Math.random() * penaltyAmounts.length)];
+            
+            if(finalVal === 'lucky') {
+                valEl.textContent = 'Lucky!';
+                document.getElementById('undo-won-text').textContent = '🎉';
+                document.getElementById('undo-desc').textContent = '(대박! 차감된 기회가 복구되었습니다!)';
+                currentUndoCount = Math.min(maxUndoCount, currentUndoCount + 1);
+                updateUndoRedoUI();
+                vibrate([50,50,50]);
+                
+                btnGroup.innerHTML = `
+                    <button class="btn btn-main" style="flex:1; width:auto; padding:14px 0;" onclick="confirmUndo()">공짜 복구 확인</button>
+                    <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal()">취소하기</button>
+                `;
+            } else if (finalVal === 10000) {
+                valEl.textContent = '10,000';
+                document.getElementById('undo-won-text').textContent = '원 당첨!';
+                document.getElementById('undo-desc').textContent = '(입금 후 "되돌리기"를 진행하세요!)';
+                vibrate([100,50,100]);
+                
+                btnGroup.innerHTML = `
+                    <button class="btn btn-main" style="flex:1; width:100%; padding:14px 0;" onclick="confirmUndo()">입금확인 (취소불가 ㅋㅋㅋ)</button>
+                `;
+            } else {
+                valEl.textContent = finalVal.toLocaleString();
+                document.getElementById('undo-won-text').textContent = '원 당첨!';
+                document.getElementById('undo-desc').textContent = '(입금 후 "되돌리기"를 진행하세요!)';
+                vibrate(80);
+                
+                btnGroup.innerHTML = `
+                    <button class="btn btn-main" style="flex:1; width:auto; padding:14px 0;" onclick="confirmUndo()">입금확인</button>
+                    <button class="btn btn-soft" style="flex:1; width:auto; padding:14px 0;" onclick="closeUndoModal()">취소하기</button>
+                `;
+            }
+        }
+    }
+    slowDown();
+}
+
+function confirmUndo() {
+    closeUndoModal();
+    performUndo();
 }
 
 /* ═══════════════════════════════════════
@@ -843,6 +1116,15 @@ function startGame(){
   let pPool=memberNames.map((n,i)=>({id:'p'+i,text:n||`${i+1}번`}));
   let rPool=roles.map((r,i)=>({id:'r'+i,text:r||`역할${i+1}`}));
 
+  if(playMode === 'both') {
+      if(pPool.length > rPool.length) {
+          const diff = pPool.length - rPool.length;
+          for(let i=0; i < diff; i++) {
+              rPool.push({id: 'r_dummy_'+i, text: '통과/꽝'});
+          }
+      }
+  }
+
   if(gameMode === 'timer') {
       origR = roles.filter(r=>r.trim()!=='').map((r,i)=>({id:'r'+i,text:r}));
       remainR = [...origR]; remainP = [...pPool]; phase = 'timer';
@@ -854,18 +1136,20 @@ function startGame(){
       origR=[...remainR];
   }
 
-  origP=[...remainP]; results=[]; pickedPerson=null; undoStack=[]; redoStack=[];
+  resetGameVariables();
+  origP=[...remainP];
+  updateUndoMaxCount(); 
+  document.getElementById('resume-fab').style.display = 'none';
+  
   navTo('game'); renderGameUI();
 }
 
 function renderGameUI(){
-  updateProgress(); updateBadge(); updateRemaining();
+  updateProgress(); updateBadge(); updateRemaining(); updateUndoRedoUI();
   document.getElementById('result-wrap').style.display=results.length?'block':'none';
   renderResultList();
   document.getElementById('next-wrap').style.display='none';
   document.getElementById('done-wrap').style.display='none';
-  document.getElementById('undo-btn').style.display=(undoStack.length && gameMode!=='ladder' && gameMode!=='timer')?'inline-flex':'none';
-  document.getElementById('redo-btn').style.display=(redoStack.length && gameMode!=='ladder' && gameMode!=='timer')?'inline-flex':'none';
   
   ['roulette','card','ladder','slot','timer'].forEach(m=>document.getElementById('mode-'+m).style.display='none');
   document.getElementById('mode-'+gameMode).style.display='block';
@@ -886,7 +1170,16 @@ function checkAutoSkip() {
             showToast(`마지막 인원 '${remainP[0].text}' (자동 배정)`);
             pickedPerson = remainP[0]; phase = 'role';
             updateProgress(); updateBadge(); updateRemaining();
-            setTimeout(checkAutoSkip, 800); 
+            
+            if (remainR.length === 1) {
+                setTimeout(checkAutoSkip, 800); 
+            } else {
+                setTimeout(() => {
+                    document.getElementById('next-wrap').style.display='block';
+                    updateUndoRedoUI();
+                    const nb=document.getElementById('next-btn'); nb.textContent=`${pickedPerson.text}의 역할 뽑기 →`; nb.onclick=nextPhase;
+                }, 800);
+            }
             return true;
         } else if (phase === 'role' && remainR.length === 1 && pickedPerson) {
             showToast(`마지막 역할 '${remainR[0].text}' (자동 배정)`);
@@ -904,10 +1197,17 @@ function checkAutoSkip() {
 
 function updateProgress(){
   let totalSteps=0, done=0;
-  if(gameMode==='timer'){totalSteps=origP.length; done=timerCurrentIdx;}
-  else if(playMode==='both') {totalSteps=origP.length*2; done=results.length*2+(pickedPerson?1:0);}
-  else if(playMode==='personOnly'){totalSteps=origP.length; done=results.length;}
-  else {totalSteps=origR.length; done=results.length;}
+  if(gameMode==='timer'){
+      totalSteps=origP.length; done=timerCurrentIdx;
+  } else if (gameMode === 'ladder') {
+      totalSteps = origP.length; done = results.length;
+  } else if(playMode==='both') {
+      totalSteps=origP.length*2; done=results.length*2+(pickedPerson?1:0);
+  } else if(playMode==='personOnly'){
+      totalSteps=origP.length; done=results.length;
+  } else {
+      totalSteps=origR.length; done=results.length;
+  }
   document.getElementById('progress-bar').innerHTML=Array.from({length:totalSteps},(_,i)=>`<div class="prog-dot ${i<done?'done':i===done?'cur':''}"></div>`).join('');
 }
 function updateBadge(){
@@ -915,7 +1215,7 @@ function updateBadge(){
   const rn=results.length+1;
   if(gameMode==='ladder') {
       b.className='phase-badge pb1'; b.textContent=`사다리타기 · ${rn}/${origP.length}`;
-      t.textContent='이름을 눌러보세요!'; s.textContent='줄을 타고 내려가 역할이 정해집니다.';
+      t.textContent='이름을 먼저 선택하세요!'; s.textContent='그 다음 사다리 시작점을 골라 직접 타보세요.';
   } else if(gameMode==='timer') {
       b.className='phase-badge pb2'; b.textContent=`감각 타이머 · ${timerCurrentIdx+1}/${origP.length}`;
       t.textContent='목표 시간에 가깝게 멈추세요!'; s.textContent='3초 후 숫자가 사라집니다. 오직 감각 승부!';
@@ -984,13 +1284,18 @@ function clickTimer(){
     } else if (timerState === 1) {
         timerState = 2; clearInterval(tInt);
         let diff = (performance.now() - tStart) / 1000; let error = Math.abs(timerTarget - diff);
-        timerRecords.push({ person: origP[timerCurrentIdx], time: diff, error: error });
+        const record = { person: origP[timerCurrentIdx], time: diff, error: error };
+        
+        redoStack = []; // 수동 진행 시 Redo Stack 클리어
+        undoStack.push({type:'timer', record: record, idx: timerCurrentIdx});
+        timerRecords.push(record);
+        updateUndoRedoUI();
         
         display.style.fontSize = '26px'; display.style.color = 'var(--text)'; display.textContent = '기록 완료 🔒';
         circle.style.borderColor = 'var(--muted)'; circle.style.background = 'var(--surface2)'; vibrate([50, 50]);
 
         if (timerCurrentIdx < origP.length - 1) {
-            document.getElementById('next-wrap').style.display = 'block'; document.getElementById('undo-btn').style.display = 'none';
+            document.getElementById('next-wrap').style.display = 'block'; 
             const nb = document.getElementById('next-btn'); nb.textContent = '다음 사람 도전 →';
             nb.onclick = () => { document.getElementById('next-wrap').style.display = 'none'; timerCurrentIdx++; renderGameUI(); };
         } else { setTimeout(finishTimerMode, 800); }
@@ -1001,12 +1306,7 @@ function finishTimerMode() {
     timerRecords.sort((a, b) => a.error - b.error);
     results = [];
     timerRecords.forEach((rec, i) => {
-        if(playMode === 'both') {
-            let rObj = origR[i] ? origR[i] : {text: '통과 (역할없음)'};
-            results.push({ person: rec.person.text, role: rObj.text, extra: `(오차 ${rec.error.toFixed(2)}초)` });
-        } else if (playMode === 'personOnly') {
-            results.push({ single: `${i+1}등: ${rec.person.text} (오차 ${rec.error.toFixed(2)}초)` });
-        }
+        results.push({ person: rec.person.text, extra: `(오차 ${rec.error.toFixed(2)}초)` });
     });
     document.getElementById('result-wrap').style.display = 'block'; renderResultList(); showDone();
 }
@@ -1071,22 +1371,69 @@ function finishRoulette(item){document.getElementById('rou-label').textContent='
 /* ═══════════════════════════════════════
    SLOT & CARD
 ═══════════════════════════════════════ */
-let slotAnim, slotState=0;
-function initSlot(){slotState=0; document.getElementById('slot-reel').textContent='?'; document.getElementById('slot-reel').classList.remove('spinning'); document.getElementById('slot-label').textContent='터치하면 멈춥니다'; document.getElementById('slot-btn').disabled=false; document.getElementById('slot-btn').textContent='🎰 레버 당기기!';}
-function clickSlot(){const pool=getPool(); if(!pool.length)return; const reel=document.getElementById('slot-reel'),btn=document.getElementById('slot-btn'),lbl=document.getElementById('slot-label'); if(slotState===0){slotState=1; btn.textContent='🛑 멈추기!'; lbl.textContent='터치하면 멈춥니다!'; reel.classList.add('spinning'); slotAnim=setInterval(()=>{reel.textContent=pool[Math.floor(Math.random()*pool.length)].text;},60);} else if(slotState===1){slotState=2; btn.disabled=true; btn.textContent='...결과 확인중...'; clearInterval(slotAnim); reel.classList.remove('spinning'); const winIdx=Math.floor(Math.random()*pool.length); const winner=pool[winIdx]; const isTroll=pool.length>=3&&Math.random()<0.25; if(isTroll){const fakeIdx=(winIdx+1)%pool.length; reel.textContent=pool[fakeIdx].text; lbl.textContent='어...?'; setTimeout(()=>{reel.style.transform='translateY(-15px)'; reel.style.transition='transform 0.1s'; setTimeout(()=>{reel.textContent=winner.text; reel.style.transform='translateY(0)'; vibrate([30,30]); lbl.textContent='🎉 당첨!'; setTimeout(()=>finishSlot(winner),400);},150);},800);}else{reel.textContent=winner.text; lbl.textContent='🎉 당첨!'; finishSlot(winner);}}}
+let slotState=0;
+function initSlot(){
+  slotState=0; 
+  document.getElementById('slot-reel').textContent='?'; 
+  document.getElementById('slot-reel').classList.remove('spinning'); 
+  document.getElementById('slot-label').textContent='터치하면 멈춥니다'; 
+  document.getElementById('slot-btn').disabled=false; 
+  document.getElementById('slot-btn').textContent='🎰 레버 당기기!';
+}
+function clickSlot(){
+  const pool=getPool(); if(!pool.length)return; 
+  const reel=document.getElementById('slot-reel'), btn=document.getElementById('slot-btn'), lbl=document.getElementById('slot-label'); 
+  if(slotState===0){
+    slotState=1; btn.textContent='🛑 멈추기!'; lbl.textContent='터치하면 멈춥니다!'; 
+    reel.classList.add('spinning'); 
+  } else if(slotState===1){
+    slotState=2; btn.disabled=true; btn.textContent='...결과 확인중...'; 
+    reel.classList.remove('spinning'); 
+
+    let ticks = 0; let delay = 90;
+    function slowDown() {
+        ticks++; delay *= 1.4;
+        reel.textContent = pool[Math.floor(Math.random()*pool.length)].text;
+        
+        if(ticks < 6) {
+            setTimeout(slowDown, delay);
+        } else {
+            const winIdx=Math.floor(Math.random()*pool.length); 
+            const winner=pool[winIdx]; 
+            const isTroll=pool.length>=3&&Math.random()<0.25; 
+            
+            if(isTroll){
+                const fakeIdx=(winIdx+1)%pool.length; reel.textContent=pool[fakeIdx].text; 
+                lbl.textContent='어...?'; 
+                setTimeout(()=>{
+                    reel.style.transform='translateY(-15px)'; reel.style.transition='transform 0.1s'; 
+                    setTimeout(()=>{
+                        reel.textContent=winner.text; reel.style.transform='translateY(0)'; 
+                        vibrate([30,30]); lbl.textContent='🎉 당첨!'; 
+                        setTimeout(()=>finishSlot(winner),400);
+                    },150);
+                },800);
+            } else {
+                reel.textContent=winner.text; lbl.textContent='🎉 당첨!'; finishSlot(winner);
+            }
+        }
+    }
+    slowDown();
+  }
+}
 function finishSlot(item){document.getElementById('slot-btn').disabled=false; vibrate([100,50,100]); onPicked(item);}
 function initCards(){const pool=getPool(), sh=shuffle([...pool]), cfg=S[season]; document.getElementById('cards-grid').innerHTML=sh.map((item,i)=>`<div class="fcard" id="fc-${i}" onclick="flipPick(${i}, '${item.id}')"><div class="fcard-inner"><div class="fc-front">?</div><div class="fc-back" style="background:${cfg.bgs[i%cfg.bgs.length]};color:${cfg.colors[i%cfg.colors.length]};border-color:${cfg.colors[i%cfg.colors.length]}55">${item.text}</div></div></div>`).join('');}
 function flipPick(i,itemId){const el=document.getElementById('fc-'+i); if(!el||el.classList.contains('flipped')||el.classList.contains('used'))return; document.querySelectorAll('.fcard').forEach(c=>{c.classList.add('used');c.style.opacity='.32';c.style.cursor='default';}); el.style.opacity='1'; el.classList.add('flipped'); vibrate(80); const pool=getPool(); const obj=pool.find(p=>p.id===itemId); setTimeout(()=>onPicked(obj),560);}
 
 /* ═══════════════════════════════════════
-   LADDER 🪜
+   LADDER 🪜 (완벽 시각적 복구 추가)
 ═══════════════════════════════════════ */
 let ladData=null;
+let ladSelectedPersonIdx = -1;
+
 function initLadder(){
-  const N = Math.max(origP.length, origR.length);
-  const topPool = [...origP]; const botPool = shuffle([...origR]);
-  while(topPool.length < N) topPool.push({ id: 'dummy_p_'+Math.random(), text: '?' });
-  while(botPool.length < N) botPool.push({ id: 'dummy_r_'+Math.random(), text: '꽝' });
+  const N = Math.max(origP.length, origR.length); 
+  const botPool = shuffle([...origR]).slice(0, N); 
 
   const W = Math.min(440, window.innerWidth - 40);
   const mg = 32; const step = N > 1 ? (W - mg * 2) / (N - 1) : 0;
@@ -1105,28 +1452,65 @@ function initLadder(){
     }
   }
 
-  ladData = { topPool, botPool, N, rungs, mg, step, W, canvasH, animating: false };
-  document.getElementById('lad-top').innerHTML = topPool.map((p, i) => {
-      const isUsed = results.find(r => r.person === p.text) || p.text === '?';
-      return `<div class="l-name ${isUsed?'l-used':'l-clickable'}" id="lt-${i}" onclick="selectLadderLine(${i})">${p.text}</div>`;
-  }).join('');
+  ladData = { N, rungs, mg, step, W, canvasH, animating: false, botPool, usedCols: new Set(), history: [] };
+  ladSelectedPersonIdx = -1;
+
+  renderLadPeople();
+  document.getElementById('lad-top').innerHTML = Array.from({length: N}).map((_, i) =>
+      `<div class="l-name l-clickable" id="lt-${i}" onclick="selectLadderLine(${i})">선택 ↓</div>`
+  ).join('');
   document.getElementById('lad-bot').innerHTML = botPool.map((_, i) => `<div class="l-res" id="lb-${i}">?</div>`).join('');
 
   const cv = document.getElementById('ladCanvas'); cv.width = W; cv.height = canvasH;
   drawLadderBase();
 }
-function drawLadderBase(){
-  const cv = document.getElementById('ladCanvas'); const { N, rungs, mg, step, canvasH } = ladData;
-  const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cv.width, canvasH);
-  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2;
-  for(let i = 0; i < N; i++){ const x = mg + i * step; ctx.beginPath(); ctx.moveTo(x, 10); ctx.lineTo(x, canvasH - 10); ctx.stroke(); }
-  ctx.strokeStyle = '#d5d5d5'; ctx.lineWidth = 2;
-  rungs.forEach(r => { const x1 = mg + r.col * step; const x2 = mg + (r.col + 1) * step; ctx.beginPath(); ctx.moveTo(x1, r.y); ctx.lineTo(x2, r.y); ctx.stroke(); });
+
+function renderLadPeople() {
+    const poolContainer = document.getElementById('lad-people-pool');
+    poolContainer.innerHTML = origP.map((p, i) => {
+        const isUsed = results.some(r => r.person === p.text);
+        const isSelected = ladSelectedPersonIdx === i;
+        let cls = 'chip chip-a';
+        let style = 'cursor:pointer; border-width:2px; transition:all 0.2s;';
+        if (isUsed) {
+            cls = 'chip chip-done';
+            style += ' cursor:default; border-color:var(--border); background:var(--surface2); transform:scale(0.95);';
+        } else if (isSelected) {
+            style += ' border-color:var(--accent); background:var(--surface3); font-weight:bold; transform:scale(1.08);';
+        } else {
+            style += ' border-color:var(--chip-a-b); background:var(--chip-a-bg); font-weight:500; transform:scale(1);';
+        }
+        return `<div class="${cls}" id="lp-${i}" style="${style}" onclick="selectLadPerson(${i})">${p.text}</div>`;
+    }).join('');
 }
+
+function selectLadPerson(idx) {
+    if(!ladData || ladData.animating) return;
+    const p = origP[idx];
+    if(results.some(r => r.person === p.text)) return; 
+    ladSelectedPersonIdx = idx;
+    renderLadPeople();
+}
+
 function selectLadderLine(col){
   if(!ladData || ladData.animating) return; 
-  if(document.getElementById('lt-' + col).classList.contains('l-used')) return;
+  if(ladData.usedCols.has(col)) return;
+  if(ladSelectedPersonIdx === -1) {
+      showToast('👆 먼저 탈 사람(이름)을 선택해주세요!');
+      return;
+  }
+
+  const pObj = origP[ladSelectedPersonIdx];
+  const pIdx = ladSelectedPersonIdx;
+  ladSelectedPersonIdx = -1; 
+  renderLadPeople(); 
+
+  ladData.usedCols.add(col);
   ladData.animating = true; vibrate(60);
+  
+  const ltEl = document.getElementById('lt-' + col);
+  ltEl.textContent = pObj.text;
+  ltEl.className = 'l-name l-used';
   
   const cfg = S[season]; const color = cfg.colors[col % cfg.colors.length];
   let curCol = col;
@@ -1150,24 +1534,82 @@ function selectLadderLine(col){
       ctx.beginPath(); ctx.arc(path[0].x, path[0].y, 6, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.arc(path[path.length-1].x, path[path.length-1].y, 6, 0, Math.PI * 2); ctx.fill();
       setTimeout(() => {
-        const pObj = ladData.topPool[col]; const rObj = ladData.botPool[curCol];
+        const rObj = ladData.botPool[curCol];
         const el = document.getElementById('lb-' + curCol);
         el.textContent = rObj.text; el.style.color = color; el.style.fontWeight = '700'; el.style.background = cfg.bgs[col % cfg.bgs.length]; el.style.borderRadius = '8px'; el.style.padding = '4px 6px';
-        results.push({person: pObj.text, role: rObj.text});
-        document.getElementById('lt-' + col).classList.add('l-used');
-        document.getElementById('result-wrap').style.display='block'; renderResultList(); ladData.animating = false;
-        if(results.length >= origP.length) setTimeout(showDone, 600); else updateBadge(); 
+        
+        const record = {person: pObj.text, role: rObj.text};
+        const hObj = {col, color, pText: pObj.text, rText: rObj.text, path, destCol: curCol};
+        
+        redoStack = []; // 수동 진행 시 Redo Stack 클리어 (이중클릭 버그 방지)
+
+        ladData.history.push(hObj);
+        undoStack.push({type:'ladder', col: col, pIdx: pIdx, person: pObj, role: rObj, historyObj: hObj});
+        results.push(record);
+        updateUndoRedoUI();
+        
+        document.getElementById('result-wrap').style.display='block'; 
+        renderResultList(); renderLadPeople(); 
+        ladData.animating = false;
+        updateProgress(); 
+
+        if(results.length >= origP.length) {
+            setTimeout(showDone, 600);
+        } else {
+            updateBadge(); 
+        }
       }, 300);
       return;
     }
     ctx.beginPath(); ctx.moveTo(path[stepIdx].x, path[stepIdx].y); ctx.lineTo(path[stepIdx+1].x, path[stepIdx+1].y); ctx.stroke();
     stepIdx++; setTimeout(animateStep, animSpeed);
   }
-  document.getElementById('lt-' + col).style.fontWeight = '900'; document.getElementById('lt-' + col).style.color = color; animateStep();
+  ltEl.style.fontWeight = '900'; ltEl.style.color = color; animateStep();
+}
+
+function drawLadderBase(){
+  const cv = document.getElementById('ladCanvas'); const { N, rungs, mg, step, canvasH } = ladData;
+  const ctx = cv.getContext('2d');
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2;
+  for(let i = 0; i < N; i++){ const x = mg + i * step; ctx.beginPath(); ctx.moveTo(x, 10); ctx.lineTo(x, canvasH - 10); ctx.stroke(); }
+  ctx.strokeStyle = '#d5d5d5'; ctx.lineWidth = 2;
+  rungs.forEach(r => { const x1 = mg + r.col * step; const x2 = mg + (r.col + 1) * step; ctx.beginPath(); ctx.moveTo(x1, r.y); ctx.lineTo(x2, r.y); ctx.stroke(); });
+}
+
+function redrawFullLadder() {
+    const cv = document.getElementById('ladCanvas'); const ctx = cv.getContext('2d');
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    drawLadderBase();
+
+    for(let i=0; i < ladData.botPool.length; i++) {
+        const el = document.getElementById('lb-' + i);
+        el.textContent = '?'; el.style.background = ''; el.style.color = ''; el.style.fontWeight = '';
+    }
+
+    ladData.history.forEach(h => {
+        ctx.strokeStyle = h.color; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        ctx.beginPath();
+        for(let i=0; i<h.path.length-1; i++) {
+            ctx.moveTo(h.path[i].x, h.path[i].y);
+            ctx.lineTo(h.path[i+1].x, h.path[i+1].y);
+        }
+        ctx.stroke();
+        ctx.fillStyle = h.color;
+        ctx.beginPath(); ctx.arc(h.path[0].x, h.path[0].y, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(h.path[h.path.length-1].x, h.path[h.path.length-1].y, 6, 0, Math.PI * 2); ctx.fill();
+
+        const el = document.getElementById('lb-' + h.destCol);
+        el.textContent = h.rText; el.style.color = h.color; el.style.fontWeight = '700';
+        el.style.background = S[season].bgs[h.col % S[season].bgs.length]; el.style.borderRadius = '8px'; el.style.padding = '4px 6px';
+        
+        const ltEl = document.getElementById('lt-' + h.col);
+        ltEl.textContent = h.pText; ltEl.className = 'l-name l-used';
+        ltEl.style.color = h.color; ltEl.style.fontWeight = '900';
+    });
 }
 
 /* ═══════════════════════════════════════
-   PICK LOGIC
+   PICK LOGIC & UNDO EXECUTOR
 ═══════════════════════════════════════ */
 function onPicked(item, isAuto = false){
   redoStack=[]; 
@@ -1180,9 +1622,9 @@ function onPicked(item, isAuto = false){
   } else {
       if(phase==='person'){
         undoStack.push({type:'person', item}); pickedPerson=item; phase='role';
-        updateProgress(); updateBadge(); updateRemaining();
+        updateProgress(); updateBadge(); updateRemaining(); updateUndoRedoUI();
         if(!checkAutoSkip()) { 
-            document.getElementById('next-wrap').style.display='block'; document.getElementById('undo-btn').style.display='inline-flex';
+            document.getElementById('next-wrap').style.display='block'; 
             const nb=document.getElementById('next-btn'); nb.textContent=`${item.text}의 역할 뽑기 →`; nb.onclick=nextPhase;
         }
       } else {
@@ -1197,38 +1639,90 @@ function onPicked(item, isAuto = false){
 function checkEndCondition(isAuto) {
     document.getElementById('result-wrap').style.display='block'; renderResultList();
     let isDone=false;
-    if(playMode==='both'&&remainP.length===0)isDone=true;
-    if(playMode==='personOnly'&&remainP.length===0)isDone=true;
-    if(playMode==='roleOnly'&&remainR.length===0)isDone=true;
+    
+    if(playMode==='both' && (remainP.length===0 || remainR.length===0)) isDone=true;
+    if(playMode==='personOnly' && remainP.length===0) isDone=true;
+    if(playMode==='roleOnly' && remainR.length===0) isDone=true;
 
     if(isDone){ showDone(); }
     else {
       if(!checkAutoSkip()) {
           document.getElementById('next-wrap').style.display='block';
-          document.getElementById('undo-btn').style.display='inline-flex';
+          updateUndoRedoUI();
           const nb=document.getElementById('next-btn'); nb.textContent='다음 뽑기 →'; nb.onclick=nextRound;
       }
     }
-    updateProgress(); updateRemaining();
+    updateProgress(); updateRemaining(); updateUndoRedoUI();
 }
 
 function nextPhase(){document.getElementById('next-wrap').style.display='none'; updateBadge(); if(gameMode==='roulette')initRou(); if(gameMode==='card')initCards(); if(gameMode==='slot')initSlot(); if(gameMode==='timer')initTimer();}
 function nextRound(){document.getElementById('next-wrap').style.display='none'; renderGameUI();}
 
-function undoLast(){
+// 실제 Undo 실행 함수 (팝업에서 확인 누른 후)
+function performUndo(){
   if(!undoStack.length)return; const last=undoStack.pop(); redoStack.push(last); 
-  if(last.type==='single_p'){results.pop(); remainP.unshift(last.item);}
+  
+  if(last.type==='ladder') {
+      results.pop();
+      ladData.usedCols.delete(last.col);
+      ladData.history.pop();
+      ladSelectedPersonIdx = -1; 
+      
+      redrawFullLadder(); renderLadPeople(); updateBadge(); updateProgress();
+      const ltEl = document.getElementById('lt-' + last.col);
+      ltEl.textContent = '선택 ↓'; ltEl.className = 'l-name l-clickable'; ltEl.style.color = ''; ltEl.style.fontWeight = '';
+  }
+  else if(last.type==='timer') {
+      timerRecords.pop();
+      timerCurrentIdx--;
+      initTimer();
+      document.getElementById('next-wrap').style.display = 'none';
+      document.getElementById('result-wrap').style.display = 'none'; 
+      updateBadge(); updateProgress();
+  }
+  else if(last.type==='single_p'){results.pop(); remainP.unshift(last.item);}
   else if(last.type==='single_r'){results.pop(); remainR.unshift(last.item);}
   else if(last.type==='person'){pickedPerson=null; phase='person';}
   else {results.pop(); remainP.push(last.person); remainR.push(last.role); pickedPerson=null; phase='person';}
-  document.getElementById('done-wrap').style.display='none'; document.getElementById('rem-section').style.display='block'; renderGameUI(); showToast('↩ 되돌렸어요');
+  
+  document.getElementById('done-wrap').style.display='none'; 
+  if(gameMode !== 'ladder' && gameMode !== 'timer') {
+      document.getElementById('rem-section').style.display='block'; 
+  }
+  isGameFinished = false; // 완료 화면에서 되돌리기 시 상태 갱신
+  renderGameUI(); showToast('↩ 되돌렸어요');
 }
+
 function redoLast(){
-  if(!redoStack.length)return; const item=redoStack.pop();
-  if(item.type==='person'){undoStack.push(item); pickedPerson=item.item; phase='role'; updateProgress(); updateBadge(); updateRemaining(); document.getElementById('next-wrap').style.display='block'; document.getElementById('undo-btn').style.display='inline-flex'; document.getElementById('redo-btn').style.display=redoStack.length?'inline-flex':'none'; const nb=document.getElementById('next-btn'); nb.textContent=`${item.item.text}의 역할 뽑기 →`; nb.onclick=nextPhase;}
+  if(!redoStack.length) return; 
+  const item=redoStack.pop();
+  
+  if(item.type==='ladder') {
+      undoStack.push(item);
+      results.push({person: item.person.text, role: item.role.text});
+      ladData.usedCols.add(item.col);
+      ladData.history.push(item.historyObj);
+      
+      redrawFullLadder(); renderLadPeople(); updateUndoRedoUI(); updateProgress();
+      if(results.length >= origP.length) setTimeout(showDone, 600); else updateBadge(); 
+  }
+  else if(item.type==='timer') {
+      undoStack.push(item);
+      timerRecords.push(item.record);
+      timerCurrentIdx++;
+      updateUndoRedoUI(); updateProgress(); updateBadge();
+      if (timerCurrentIdx < origP.length) {
+          initTimer();
+      } else {
+          finishTimerMode();
+      }
+  }
+  else if(item.type==='person'){undoStack.push(item); pickedPerson=item.item; phase='role'; updateProgress(); updateBadge(); updateRemaining(); document.getElementById('next-wrap').style.display='block'; updateUndoRedoUI(); const nb=document.getElementById('next-btn'); nb.textContent=`${item.item.text}의 역할 뽑기 →`; nb.onclick=nextPhase;}
   else if(item.type==='pair'){undoStack.push(item); results.push({person:item.person.text, role:item.role.text}); remainP=remainP.filter(p=>p.id!==item.person.id); remainR=remainR.filter(r=>r.id!==item.role.id); pickedPerson=null; phase='person'; checkEndCondition();}
   else if(item.type==='single_p'){undoStack.push(item); results.push({single: item.item.text}); remainP=remainP.filter(p=>p.id!==item.item.id); checkEndCondition();}
   else if(item.type==='single_r'){undoStack.push(item); results.push({single: item.item.text}); remainR=remainR.filter(r=>r.id!==item.item.id); checkEndCondition();}
+  
+  if(gameMode !== 'ladder' && gameMode !== 'timer') renderGameUI();
   showToast('↪ 다시 적용했어요');
 }
 
@@ -1236,7 +1730,15 @@ function renderResultList(){
   const cfg=S[season];
   document.getElementById('result-list').innerHTML=results.map((r,i)=>{
     const c=cfg.colors[i%cfg.colors.length], bg=cfg.bgs[i%cfg.bgs.length];
-    if(playMode==='both' || r.person){
+    if(gameMode === 'timer') {
+        return `<div class="result-row ${i===results.length-1?'new':''}">
+          <div class="r-num" style="background:${bg};color:${c};border:1.5px solid ${c}44">${i+1}</div>
+          <div class="r-person" style="color:${c}; display:flex; flex-direction:column; flex:1;">
+            <span style="font-size:16px; font-weight:700;">${r.person}</span>
+            <span style="font-size:11px; color:var(--muted); font-weight:400; margin-top:2px;">${r.extra}</span>
+          </div>
+        </div>`;
+    } else if(playMode==='both' || r.person){
         return `<div class="result-row ${i===results.length-1?'new':''}">
           <div class="r-num" style="background:${bg};color:${c};border:1.5px solid ${c}44">${i+1}</div>
           <div class="r-person" style="color:${c}; display:flex; flex-direction:column;">
@@ -1254,14 +1756,17 @@ function renderResultList(){
     }
   }).join('');
 }
-function showDone(){document.getElementById('next-wrap').style.display='none'; document.getElementById('done-wrap').style.display='block'; document.getElementById('undo-btn').style.display='none'; document.getElementById('rem-section').style.display='none'; ['roulette','card','ladder','slot','timer'].forEach(m=>document.getElementById('mode-'+m).style.display='none'); vibrate([100,50,100]); saveToHistory();}
+function showDone(){isGameFinished = true; document.getElementById('next-wrap').style.display='none'; document.getElementById('done-wrap').style.display='block'; document.getElementById('rem-section').style.display='none'; ['roulette','card','ladder','slot','timer'].forEach(m=>document.getElementById('mode-'+m).style.display='none'); vibrate([100,50,100]); saveToHistory(); updateUndoRedoUI();}
 function rerollAll(){
+  resetGameVariables();
   if(gameMode === 'timer') { timerCurrentIdx = 0; timerRecords = []; timerState = 0; initTimer(); }
   remainP=[...origP]; remainR=shuffle([...origR]);
   if(playMode==='roleOnly')remainP=[]; if(playMode==='personOnly')remainR=[];
-  results=[]; pickedPerson=null; undoStack=[]; redoStack=[];
+  updateUndoMaxCount(); 
   phase=playMode==='roleOnly'?'single':(playMode==='personOnly'?'single':'person');
-  document.getElementById('rem-section').style.display='block'; document.getElementById('done-wrap').style.display='none'; renderGameUI();
+  
+  if(gameMode !== 'ladder' && gameMode !== 'timer') document.getElementById('rem-section').style.display='block'; 
+  document.getElementById('done-wrap').style.display='none'; renderGameUI();
 }
 
 /* ═══════════════════════════════════════
@@ -1285,7 +1790,10 @@ function saveAsImage(){
     ctx.fillStyle=cbg; ctx.shadowColor='rgba(0,0,0,.07)'; ctx.shadowBlur=10; ctx.shadowOffsetY=3; rr(ctx,PAD,cy,W-PAD*2,CH,14); ctx.fill(); ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0; ctx.strokeStyle=col+'44'; ctx.lineWidth=1.5; rr(ctx,PAD,cy,W-PAD*2,CH,14); ctx.stroke();
     ctx.fillStyle=col; rr(ctx,PAD,cy+12,5,CH-24,3); ctx.fill(); ctx.fillStyle=col+'20'; ctx.beginPath(); ctx.arc(PAD+24,cy+CH/2,15,0,Math.PI*2); ctx.fill(); ctx.fillStyle=col; ctx.font='bold 12px sans-serif'; ctx.textAlign='center'; ctx.fillText(String(i+1).padStart(2,'0'),PAD+24,cy+CH/2+4); ctx.textAlign='left';
     
-    if(playMode==='both' || r.person){
+    if(gameMode === 'timer') {
+        ctx.fillStyle=col; ctx.font='bold 17px sans-serif'; ctx.fillText(r.person,PAD+46,cy+CH/2 - 2);
+        ctx.fillStyle='rgba(0,0,0,.4)'; ctx.font='12px sans-serif'; ctx.fillText(r.extra, PAD+46, cy+CH/2+14);
+    } else if(playMode==='both' || r.person){
         ctx.fillStyle=col; ctx.font='bold 17px sans-serif'; ctx.fillText(r.person,PAD+46,cy+CH/2 - (r.extra?8:5));
         ctx.fillStyle='rgba(0,0,0,.55)'; ctx.font='13px sans-serif'; ctx.fillText('→  '+r.role, PAD+46 + ctx.measureText(r.person).width + 12, cy+CH/2 - (r.extra?8:5));
         if(r.extra) {
@@ -1301,9 +1809,52 @@ function saveAsImage(){
 }
 function rr(ctx,x,y,w,h,r){ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();}
 
-function shareResult(){const pname=loadP()[activePreset]?.name||'여행'; const lines=results.map((r,i)=>{if(playMode==='both' || r.person)return `${i+1}. ${r.person} → ${r.role} ${r.extra?r.extra:''}`; return `${i+1}. ${r.single}`;}).join('\n'); const text=`✈ ${pname} 결과\n\n${lines}\n\n#여행역할정하기`; if(navigator.share){navigator.share({title:'여행 역할 배정',text}).catch(()=>{});}else{navigator.clipboard.writeText(text).then(()=>showToast('📋 복사됐어요!')).catch(()=>prompt('복사해주세요!',text));}}
-function saveToHistory(){const pname=loadP()[activePreset]?.name||'여행'; const h=loadH(); const now=new Date(); h.unshift({id:Date.now(),title:pname,season,playMode,date:`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`,results:[...results]}); lsSet('tg_history',h.slice(0,20));}
-function renderHistory(){const h=loadH(); const el=document.getElementById('history-list'); if(!h.length){el.innerHTML='<div class="history-empty"><div class="he-icon">🗺️</div>아직 기록이 없어요<br>게임을 완료하면 여기 쌓여요!</div>'; return;} el.innerHTML=h.map(item=>{const cfg=S[item.season||'spring']; return `<div class="h-item"><div class="h-meta"><div class="h-title">${item.title}</div><div class="h-right"><div class="h-date">${item.date}</div><button class="h-del" onclick="deleteH(${item.id})">🗑</button></div></div><div class="h-rows">${item.results.map((r,i)=>{if(item.playMode==='both'||r.person){return `<div class="h-row"><span class="h-person" style="color:${cfg.colors[i%cfg.colors.length]}">${r.person}</span><span class="h-sep">→</span><span>${r.role} ${r.extra?`<small style="color:var(--muted)">${r.extra}</small>`:''}</span></div>`;}else{return `<div class="h-row"><span class="h-person" style="color:${cfg.colors[i%cfg.colors.length]}">${r.single}</span></div>`;}}).join('')}</div></div>`;}).join('');}
+function shareResult(){const pname=loadP()[activePreset]?.name||'여행'; const lines=results.map((r,i)=>{if(gameMode === 'timer') return `${i+1}등. ${r.person} ${r.extra}`; if(playMode==='both' || r.person) return `${i+1}. ${r.person} → ${r.role} ${r.extra?r.extra:''}`; return `${i+1}. ${r.single}`;}).join('\n'); const text=`✈ ${pname} 결과\n\n${lines}\n\n#여행역할정하기`; if(navigator.share){navigator.share({title:'여행 역할 배정',text}).catch(()=>{});}else{navigator.clipboard.writeText(text).then(()=>showToast('📋 복사됐어요!')).catch(()=>prompt('복사해주세요!',text));}}
+function saveToHistory(){
+    const pname=loadP()[activePreset]?.name||'여행'; const h=loadH(); const now=new Date(); 
+    h.unshift({
+        id:Date.now(),
+        title:pname,
+        season,
+        playMode,
+        gameMode, 
+        date:`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`,
+        results:[...results]
+    }); 
+    lsSet('tg_history',h.slice(0,20));
+}
+function renderHistory(){
+    const h=loadH(); const el=document.getElementById('history-list'); 
+    if(!h.length){el.innerHTML='<div class="history-empty"><div class="he-icon">🗺️</div>아직 기록이 없어요<br>게임을 완료하면 여기 쌓여요!</div>'; return;} 
+    
+    const gmIcons = {roulette:'🎡 룰렛', card:'🃏 카드뽑기', ladder:'🪜 사다리타기', slot:'🎪 슬롯머신', timer:'⏱️ 타이머'};
+
+    el.innerHTML=h.map(item=>{
+        const cfg=S[item.season||'spring']; 
+        const gmBadge = item.gameMode ? `<span style="font-size:11px; padding:2px 6px; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--muted); margin-left:6px; font-weight:500;">${gmIcons[item.gameMode]||'게임'}</span>` : '';
+
+        return `<div class="h-item">
+            <div class="h-meta">
+                <div class="h-title" style="display:flex; align-items:center;">${item.title} ${gmBadge}</div>
+                <div class="h-right">
+                    <div class="h-date">${item.date}</div>
+                    <button class="h-del" onclick="deleteH(${item.id})">🗑</button>
+                </div>
+            </div>
+            <div class="h-rows">
+                ${item.results.map((r,i)=>{
+                    if(item.gameMode === 'timer') {
+                        return `<div class="h-row"><span class="h-person" style="color:${cfg.colors[i%cfg.colors.length]}">${r.person}</span><span class="h-sep"></span><span>${r.extra||''}</span></div>`;
+                    } else if(item.playMode==='both'||r.person){
+                        return `<div class="h-row"><span class="h-person" style="color:${cfg.colors[i%cfg.colors.length]}">${r.person}</span><span class="h-sep">→</span><span>${r.role||'통과/꽝'} ${r.extra?`<small style="color:var(--muted)">${r.extra}</small>`:''}</span></div>`;
+                    } else {
+                        return `<div class="h-row"><span class="h-person" style="color:${cfg.colors[i%cfg.colors.length]}">${r.single}</span></div>`;
+                    }
+                }).join('')}
+            </div>
+        </div>`;
+    }).join('');
+}
 function deleteH(id){lsSet('tg_history',loadH().filter(h=>h.id!==id));renderHistory();}
 function clearAllHistory(){if(!confirm('기록을 전부 삭제할까요?'))return;lsSet('tg_history',[]);renderHistory();showToast('삭제됐어요');}
 
@@ -1311,7 +1862,7 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 function vibrate(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
 
-activePreset=lsGet('tg_active',0); const ip=loadP()[activePreset]; memberCount=ip.members.length||5; memberNames=[...ip.members]; while(memberNames.length<memberCount)memberNames.push(''); roles=[...ip.roles]; while(roles.length<memberCount)roles.push(''); gameMode=ip.mode||'roulette'; document.getElementById('count-disp').textContent=memberCount; renderPresets(); renderNames(); renderRoles(); updateSetupModeBanner(); document.body.setAttribute('data-route', 'splash'); setSeason(season); initSplash();
+activePreset=lsGet('tg_active',0); const ip=loadP()[activePreset]; memberCount=ip.members.length||5; memberNames=[...ip.members]; while(memberNames.length<memberCount)memberNames.push(''); roles=[...ip.roles]; while(roles.length<memberCount)roles.push(''); gameMode=ip.mode||'roulette'; document.getElementById('count-disp').textContent=memberCount; renderPresets(); renderNames(); renderRoles(); updateSetupModeBanner(); document.body.setAttribute('data-route', 'splash'); setSeason(season); initSplash(); updateUndoMaxCount();
 </script>
 </body>
 </html>
