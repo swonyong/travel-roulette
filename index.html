@@ -2211,4 +2211,4 @@ function vibrate(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
 activePreset=lsGet('tg_active',0); const ip=loadP()[activePreset]; memberCount=ip.members.length||5; memberNames=[...ip.members]; while(memberNames.length<memberCount)memberNames.push(''); roles=[...ip.roles]; while(roles.length<memberCount)roles.push(''); gameMode=ip.mode||'roulette'; document.getElementById('count-disp').textContent=memberCount; renderPresets(); renderNames(); renderRoles(); updateSetupModeBanner(); document.body.setAttribute('data-route', 'splash'); setSeason(season); initSplash(); updateUndoMaxCount();
 </script>
 </body>
-</html>
+</html> 
